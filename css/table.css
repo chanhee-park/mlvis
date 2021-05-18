@@ -1,0 +1,43 @@
+.block.block__table {
+  box-sizing: border-box;
+  overflow: scroll;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  height: 85px;
+  overflow: auto;
+}
+
+thead th {
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+tbody tr {
+  height: 26px;
+  padding: 1px 0;
+}
+
+td svg {
+  height: 24px;
+}
+
+.table-header__feature-name {
+  height: 35px;
+  line-height: 35px;
+  font-weight: 400;
+  border-bottom: solid 1px #aaa;
+  cursor: pointer;
+}
+
+.material-icons {
+  height: 35px;
+  line-height: 35px;
+}

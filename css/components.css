@@ -1,0 +1,48 @@
+.button {
+  text-align: center;
+  margin: auto;
+  padding: 0 8px;
+  cursor: pointer;
+  border: 1px solid royalblue;
+  border-radius: 4px;
+}
+
+.button:hover {
+  background: royalblue;
+  color: white;
+  font-weight: 900;
+}
+
+.range-selection {
+  width: 100%;
+  height: 12px;
+  padding: 4px;
+  position: relative;
+}
+
+.range-selection__bar {
+  width: 100%;
+  height: 4px;
+  border-radius: 100%;
+  margin: 0;
+  padding: 0;
+  background: #ccc;
+}
+
+.range-selection__chip {
+  display: inline-block;
+  width: 20px;
+  height: 10px;
+  border-radius: 10%;
+  background: #777;
+  position: absolute;
+  top: 0;
+}
+
+.chip__from {
+  left: 0;
+}
+
+.chip__to {
+  right: 0;
+}

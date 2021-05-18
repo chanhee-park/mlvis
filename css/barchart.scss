@@ -1,0 +1,47 @@
+@for $i from 1 through 100 {
+  .barchart-#{$i} {
+    $value: ($i * 1%);
+    width: $value;
+    height: 100%;
+    background-color: #CCC;
+  }
+}
+
+.barchart {
+  width: 100%;
+  height: 100%;
+  background-color: #CCC;
+}
+.barchart-10 {
+  width: 100%;
+}
+.barchart-9 {
+  width: 90%;
+}
+.barchart-8 {
+  width: 80%;
+}
+.barchart-7 {
+  width: 70%;
+}
+.barchart-6 {
+  width: 60%;
+}
+.barchart-5 {
+  width: 50%;
+}
+.barchart-4 {
+  width: 40%;
+}
+.barchart-3 {
+  width: 30%;
+}
+.barchart-2 {
+  width: 20%;
+}
+.barchart-1 {
+  width: 10%;
+}
+.barchart-0 {
+  width: 0%;
+}

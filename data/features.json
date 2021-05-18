@@ -1,0 +1,15 @@
+{
+  "month": "numerical",
+  "day": "numerical",
+  "time": "numerical",
+  "season": "categorical",
+  "holiday": "boolean",
+  "workingday": "boolean",
+  "weather": "categorical",
+  "temp": "numerical",
+  "atemp": "numerical",
+  "humidity": "numerical",
+  "windspeed": "numerical",
+  "real": "numerical",
+  "pred": "numerical"
+}
