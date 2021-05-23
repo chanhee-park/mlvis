@@ -10,6 +10,7 @@ class PCP extends React.Component {
   }
 
   draw() {
+    // SVG INFOMATION
     // set svg
     const svg = d3.select(`#parallel-coordinates`);
     svg.selectAll("*").remove();
@@ -24,37 +25,37 @@ class PCP extends React.Component {
     const graphW = svgW - (paddingL + paddingR);
     const graphH = svgH - (paddingT + paddingB);
 
-    // set scale functions for each feature
-    const scales = {}; // value to pos
+    // SCALE: set scale functions for each feature
+    // SCALE X: feature name -> x position
     const featureNames = Object.keys(this.props.features);
+    const colSize = graphW / featureNames.length;
+    const scaleX = d3
+      .scaleLinear()
+      .domain([0, featureNames.length])
+      .range([paddingL + colSize / 2, paddingL + graphW + colSize / 2]);
+
+    // SCALE Y: feature value -> y position
+    const scaleY = {};
     featureNames.forEach((feature) => {
-      // get scale of a feature
-
-      // feature name -> x position
-      const scaleX = d3
-        .scaleLinear()
-        .domain([0, featureNames.length])
-        .range([paddingL, paddingL + graphW]);
-
-      // feature value -> y position
-      const scaleY = d3
+      scaleY[feature] = d3
         .scaleLinear()
         .domain([
           this.props.features[feature].min,
           this.props.features[feature].max,
         ])
         .range([paddingT + graphH, paddingT]);
+    });
 
-      // y position -> feature value
-      const back = d3
+    // SCALE BACK Y: y position -> feature value
+    const scaleBackY = {};
+    featureNames.forEach((feature) => {
+      scaleBackY[feature] = d3
         .scaleLinear()
         .domain([paddingT + graphH, paddingT])
         .range([
           this.props.features[feature].min,
           this.props.features[feature].max,
         ]);
-
-      scales[feature] = { x: scaleX, y: scaleY, back: back };
     });
 
     const colorCriteria = "pred";
@@ -78,8 +79,8 @@ class PCP extends React.Component {
     this.props.instances.forEach((instance) => {
       // get points for each feature
       const path_points = featureNames.map((feature, f_index) => ({
-        x: scales[feature].x(f_index),
-        y: scales[feature].y(instance[feature]),
+        x: scaleX(f_index),
+        y: scaleY[feature](instance[feature]),
       }));
 
       // get color
@@ -106,13 +107,22 @@ class PCP extends React.Component {
 
     // draw axis lines and add filter
     featureNames.forEach((feature, f_index) => {
+      // column name
+      svg
+        .append("text")
+        .text(feature)
+        .attr("x", scaleX(f_index))
+        .attr("y", 8)
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "hanging");
+
       // axis line
       svg
         .append("line")
-        .attr("x1", scales[feature].x(f_index))
-        .attr("x2", scales[feature].x(f_index))
-        .attr("y1", scales[feature].y(this.props.features[feature].min))
-        .attr("y2", scales[feature].y(this.props.features[feature].max))
+        .attr("x1", scaleX(f_index))
+        .attr("x2", scaleX(f_index))
+        .attr("y1", scaleY[feature](this.props.features[feature].min))
+        .attr("y2", scaleY[feature](this.props.features[feature].max))
         .attr("stroke", "#AAA")
         .attr("stroke-width", 2);
     });
@@ -123,8 +133,8 @@ class PCP extends React.Component {
       let filterRect;
       svg
         .append("rect")
-        .attr("x", scales[feature].x(f_index) - 5)
-        .attr("y", scales[feature].y(this.props.features[feature].max))
+        .attr("x", scaleX(f_index) - 5)
+        .attr("y", scaleY[feature](this.props.features[feature].max))
         .attr("width", 10)
         .attr("height", graphH)
         .attr("fill", "#fff")
@@ -136,7 +146,7 @@ class PCP extends React.Component {
               filterInfo.createY = d3.event.y;
               filterInfo.startY = d3.event.y;
               filterRect = svg.append("rect").attrs({
-                x: scales[feature].x(f_index) - 5,
+                x: scaleX(f_index) - 5,
                 y: d3.eventY,
                 width: 10,
                 height: 0,
@@ -159,8 +169,8 @@ class PCP extends React.Component {
               // 필터링 처리
               this.filter(
                 feature,
-                scales[feature].back(filterInfo.startY + filterInfo.height),
-                scales[feature].back(filterInfo.startY)
+                scaleBackY[feature](filterInfo.startY + filterInfo.height),
+                scaleBackY[feature](filterInfo.startY)
               );
 
               // 다시 그리기
