@@ -1,18 +1,26 @@
 // Instance Augmentation Plot
-function IAP({ instances, selectedInstances, setSelectedInstances, features }) {
+function IAP({
+  instances,
+  features,
+  selectedInstances,
+  focusedInstance,
+  setSelectedInstances,
+}) {
   return (
     <div className="block block__iap">
       <div className="component-group iap__component-group--left">
         <PCP
           instances={instances}
-          selectedInstances={selectedInstances}
-          setSelectedInstances={setSelectedInstances}
           features={features}
+          selectedInstances={selectedInstances}
+          focusedInstance={focusedInstance}
+          setSelectedInstances={setSelectedInstances}
         />
         <Scatter
           instances={instances}
-          selectedInstances={selectedInstances}
           features={features}
+          selectedInstances={selectedInstances}
+          focusedInstance={focusedInstance}
         />
       </div>
       <div className="component-group iap__component-group--right">

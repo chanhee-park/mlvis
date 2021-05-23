@@ -11,13 +11,13 @@ class Table extends React.Component {
           <TableHeader
             features={this.props.features}
             instances={this.props.instances}
-            setSelectedInstances={(v) => {
-              this.props.setSelectedInstances(v);
-            }}
+            setSelectedInstances={(v) => this.props.setSelectedInstances(v)}
           />
           <TableBody
             features={this.props.features}
             instances={this.props.instances}
+            focusedInstance={this.props.focusedInstance}
+            setFocusedInstance={this.props.setFocusedInstance}
           />
         </table>
       </div>
@@ -107,10 +107,11 @@ class TableBody extends React.Component {
       <tbody>
         {this.props.instances.map((v) => (
           <TableRow
-            features={this.props.features}
-            instances={this.props.instances}
             key={`tr-out-${Data.getInstanceID(v)}`}
             instance={v}
+            features={this.props.features}
+            isFocused={v === this.props.focusedInstance}
+            setFocusedInstance={this.props.setFocusedInstance}
           />
         ))}
       </tbody>
@@ -122,8 +123,11 @@ class TableRow extends React.Component {
   render() {
     const instanceID = Data.getInstanceID(this.props.instance);
     return (
-      <tr key={`tr-in-${instanceID}`}>
-        {Object.entries(this.props.instance).map((ent, index) => {
+      <tr
+        key={`tr-in-${instanceID}`}
+        onClick={() => this.props.setFocusedInstance(this.props.instance)}
+      >
+        {Object.entries(this.props.instance).map((ent) => {
           const fName = ent[0];
           const value = ent[1];
           const min = this.props.features[fName].min;
@@ -132,9 +136,9 @@ class TableRow extends React.Component {
           return (
             <td key={`td-${instanceID}-${fName}`}>
               <TableBarChart
-                id={`tv-${instanceID}-${fName}`}
                 value={value}
                 portion={portion}
+                isFocused={this.props.isFocused}
               />
             </td>
           );
@@ -145,42 +149,26 @@ class TableRow extends React.Component {
 }
 
 class TableBarChart extends React.Component {
-  componentDidMount() {
-    this.draw();
-  }
-
-  draw() {
-    // set svg
-    const svg = d3.select(`#${this.props.id}`);
-    svg.selectAll("*").remove();
-
-    // size
-    const graphW = svg.style("width").replace("px", "");
-    const graphH = svg.style("height").replace("px", "");
-
-    // draw bar chart
-    svg
-      .append("rect")
-      .attr("x", 0)
-      .attr("y", 0)
-      .attr("width", graphW * this.props.portion)
-      .attr("height", graphH)
-      .attr("fill", "#CCC");
-
-    // showing a value as a text
-    svg
-      .append("text")
-      .text(Math.round(this.props.value))
-      .attrs({
-        x: graphW - 5,
-        y: graphH / 2,
-        fill: "#777",
-        "text-anchor": "end",
-        "alignment-baseline": "central",
-      });
-  }
-
   render() {
-    return <svg id={this.props.id} />;
+    return (
+      <svg>
+        <rect
+          x="0"
+          y="0"
+          width={`${this.props.portion * 100}%`}
+          height="100%"
+          fill="#CCC"
+        />
+        <text
+          x="95%"
+          y="50%"
+          fill="#777"
+          textAnchor="end"
+          alignmentBaseline="central"
+        >
+          {Math.round(this.props.value)}
+        </text>
+      </svg>
+    );
   }
 }

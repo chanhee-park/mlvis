@@ -5,8 +5,14 @@ class PCP extends React.Component {
 
   componentDidMount() {
     this.draw();
-    // TODO: [FIXME] 다시 그릴때, 선만 다시 그리기. (선택 박스 지워짐 ㅠ)
-    // size and svg 등 states로 빼기, 축, 인스턴스, 필터 각각 함수로 빼기
+    // TODO: [FIXME] 다시 그릴때, 인스턴스 라인만 다시 그리기.
+    // 특히, 선택 박스 지워짐 해결
+    // size and svg 등 states로 빼기,
+    // 축, 인스턴스, 필터 각각 함수로 빼기
+  }
+
+  componentDidUpdate() {
+    this.draw();
   }
 
   draw() {
@@ -83,15 +89,25 @@ class PCP extends React.Component {
         y: scaleY[feature](instance[feature]),
       }));
 
-      // get color
+      // get styles
       const scaledForColor = scaleColor(instance[colorCriteria]);
       let color = d3.interpolateYlGnBu(scaledForColor);
+      let strokeWidth = 2;
+      let opacity = 0.2;
+
+      // style for not-selected when there are any selected instance. 
       if (
         this.props.selectedInstances.length > 0 &&
-        this.props.selectedInstances.indexOf(instance) < 0
+        this.props.selectedInstances.indexOf(instance) === -1
       ) {
-        // 인스턴스 선택이 이뤄졌을 때, 선택되지 않은 인스턴스는 무채색으로 표시 한다.
         color = "#eee";
+      }
+
+      // style for focused
+      if (this.props.focusedInstance === instance) {
+        color = "#F95";
+        strokeWidth = 5;
+        opacity = 1;
       }
 
       // draw a line for a instance
@@ -100,8 +116,8 @@ class PCP extends React.Component {
         .attr("d", lineBasis(path_points))
         .attr("fill", "none")
         .attr("stroke", color)
-        .attr("stroke-width", 2)
-        .attr("opacity", 0.2)
+        .attr("stroke-width", strokeWidth)
+        .attr("opacity", opacity)
         .attr("class", "instance-line");
     });
 
@@ -173,9 +189,7 @@ class PCP extends React.Component {
                 scaleBackY[feature](filterInfo.startY)
               );
 
-              // 다시 그리기
-              this.draw();
-              // TODO: remove here. 크기 작을때 삭제
+              // TODO: 크기 작을때 삭제
             })
         );
     });

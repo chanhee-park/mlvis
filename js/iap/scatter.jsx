@@ -98,15 +98,25 @@ class Scatter extends React.Component {
 
     // draw points of each instance by each feature
     this.props.instances.forEach((instance) => {
-      // get color
+      // get styles
       const scaledForColor = scaleColor(instance[colorCriteria]);
       let color = d3.interpolateYlGnBu(scaledForColor);
+      let r = 2;
+      let opacity = 0.2;
+
+      // style for not-selected when there are any selected instance.
       if (
         this.props.selectedInstances.length > 0 &&
-        this.props.selectedInstances.indexOf(instance) < 0
+        this.props.selectedInstances.indexOf(instance) === -1
       ) {
-        // 인스턴스 선택이 이뤄졌을 때, 선택되지 않은 인스턴스는 무채색으로 표시 한다.
         color = "#eee";
+      }
+
+      // style for focused
+      if (this.props.focusedInstance === instance) {
+        color = "#F95";
+        r = 5;
+        opacity = 1;
       }
 
       // draw points
@@ -118,9 +128,9 @@ class Scatter extends React.Component {
           .append("circle")
           .attr("cx", cx)
           .attr("cy", cy)
-          .attr("r", 2)
+          .attr("r", r)
           .attr("fill", color)
-          .attr("opacity", 0.25);
+          .attr("opacity", opacity);
       });
     });
   }
