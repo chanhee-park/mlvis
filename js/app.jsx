@@ -5,7 +5,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       selectedInstances: this.props.instances,
-      focusedInstance: undefined,
+      focusedInstance: undefined, // this.props.instances[3]
     };
   }
 
@@ -37,7 +37,7 @@ class App extends React.Component {
             <Table
               instances={this.state.selectedInstances}
               features={this.props.features}
-              focusedInstance={this.props.focusedInstance}
+              focusedInstance={this.state.focusedInstance}
               setSelectedInstances={(v) => this.setSelectedInstances(v)}
               setFocusedInstance={(v) => this.setFocusedInstance(v)}
             />

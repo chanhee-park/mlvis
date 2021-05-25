@@ -65,13 +65,14 @@ class PCP extends React.Component {
     });
 
     const colorCriteria = "pred";
+    // [0, 1]로 하면 높은 밝기 값을 갖는 인스턴스가 잘 보이지 않아서 [0.25, 1]로 스케일링 함 
     const scaleColor = d3
       .scaleLinear()
       .domain([
         this.props.features[colorCriteria].min,
         this.props.features[colorCriteria].max,
       ])
-      .range([0, 1]);
+      .range([0.25, 1]);
 
     // set a line function
     // curve explorer: http://bl.ocks.org/d3indepth/b6d4845973089bc1012dec1674d3aff8
@@ -95,7 +96,7 @@ class PCP extends React.Component {
       let strokeWidth = 2;
       let opacity = 0.2;
 
-      // style for not-selected when there are any selected instance. 
+      // style for not-selected when there are any selected instance.
       if (
         this.props.selectedInstances.length > 0 &&
         this.props.selectedInstances.indexOf(instance) === -1

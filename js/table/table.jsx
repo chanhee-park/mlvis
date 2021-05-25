@@ -114,6 +114,7 @@ class TableBody extends React.Component {
             setFocusedInstance={this.props.setFocusedInstance}
           />
         ))}
+        
       </tbody>
     );
   }
@@ -157,7 +158,7 @@ class TableBarChart extends React.Component {
           y="0"
           width={`${this.props.portion * 100}%`}
           height="100%"
-          fill="#CCC"
+          fill={this.props.isFocused ? "#F95" : "#CCC"}
         />
         <text
           x="95%"
