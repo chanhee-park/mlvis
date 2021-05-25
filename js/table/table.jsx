@@ -105,16 +105,17 @@ class TableBody extends React.Component {
   render() {
     return (
       <tbody>
-        {this.props.instances.map((v) => (
-          <TableRow
-            key={`tr-out-${Data.getInstanceID(v)}`}
-            instance={v}
-            features={this.props.features}
-            isFocused={v === this.props.focusedInstance}
-            setFocusedInstance={this.props.setFocusedInstance}
-          />
-        ))}
-        
+        {this.props.instances.map((v) => {
+          return (
+            <TableRow
+              key={`tr-out-${Data.getInstanceID(v)}`}
+              instance={v}
+              features={this.props.features}
+              isFocused={v === this.props.focusedInstance}
+              setFocusedInstance={this.props.setFocusedInstance}
+            />
+          );
+        })}
       </tbody>
     );
   }
@@ -144,6 +145,9 @@ class TableRow extends React.Component {
             </td>
           );
         })}
+        {this.props.isFocused && (
+          <TableFocusedCell instance={this.props.instance} />
+        )}
       </tr>
     );
   }
@@ -170,6 +174,25 @@ class TableBarChart extends React.Component {
           {Math.round(this.props.value)}
         </text>
       </svg>
+    );
+  }
+}
+
+class TableFocusedCell extends React.Component {
+  render() {
+    // console.log(this.props.instance);
+    return (
+      <td className="focused">
+        <div className="focused-card">
+          <div className="wellcome-message">{`
+            This is a focused instance.
+            It is a just example image.
+          `}</div>
+          <div className="example-image">
+            <img src="./data/focused_vis_example.png" width="50%" />
+          </div>
+        </div>
+      </td>
     );
   }
 }

@@ -24,7 +24,7 @@ class PCP extends React.Component {
     // size
     const svgW = svg.style("width").replace("px", "");
     const svgH = svg.style("height").replace("px", "");
-    const paddingT = 30;
+    const paddingT = 40;
     const paddingR = 10;
     const paddingB = 0;
     const paddingL = 30;
@@ -129,7 +129,7 @@ class PCP extends React.Component {
         .append("text")
         .text(feature)
         .attr("x", scaleX(f_index))
-        .attr("y", 8)
+        .attr("y", 15)
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "hanging");
 
