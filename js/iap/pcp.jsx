@@ -1,27 +1,25 @@
 class PCP extends React.Component {
   constructor(props) {
     super(props);
+    this.state = { firstDraw: true };
   }
 
   componentDidMount() {
-    this.draw();
-    // TODO: [FIXME] 다시 그릴때, 인스턴스 라인만 다시 그리기.
-    // 특히, 선택 박스 지워짐 해결
-    // size and svg 등 states로 빼기,
-    // 축, 인스턴스, 필터 각각 함수로 빼기
+    this.setDrawingOption();
   }
 
   componentDidUpdate() {
-    this.draw();
+    if (this.state.firstDraw) {
+      this.setState({ firstDraw: false });
+      this.draw();
+    } else {
+      this.drawInstances();
+    }
   }
 
-  draw() {
-    // SVG INFOMATION
-    // set svg
+  setDrawingOption() {
+    // svg size
     const svg = d3.select(`#parallel-coordinates`);
-    svg.selectAll("*").remove();
-
-    // size
     const svgW = svg.style("width").replace("px", "");
     const svgH = svg.style("height").replace("px", "");
     const paddingT = 40;
@@ -65,7 +63,7 @@ class PCP extends React.Component {
     });
 
     const colorCriteria = "pred";
-    // [0, 1]로 하면 높은 밝기 값을 갖는 인스턴스가 잘 보이지 않아서 [0.25, 1]로 스케일링 함 
+    // [0, 1]로 하면 높은 밝기 값을 갖는 인스턴스가 잘 보이지 않아서 [0.25, 1]로 스케일링 함
     const scaleColor = d3
       .scaleLinear()
       .domain([
@@ -82,16 +80,42 @@ class PCP extends React.Component {
       .y((p) => p.y)
       .curve(d3.curveMonotoneY); // curveLinear, curveCatmullRom (α=0.5), curveMonotoneY
 
-    // draw line of each instance and selected instance
+    this.setState({
+      svg,
+      graphW,
+      graphH,
+      scaleX,
+      scaleY,
+      scaleBackY,
+      scaleColor,
+      colorCriteria,
+      lineBasis,
+      featureNames,
+    });
+  }
+
+  draw() {
+    this.state.svg.selectAll("*").remove();
+    this.drawInstances();
+    this.drawAxes();
+    this.addFilterZone();
+  }
+
+  drawInstances() {
+    this.state.svg.selectAll(".instance-line").remove();
+
+    // draw instance lines
     this.props.instances.forEach((instance) => {
       // get points for each feature
-      const path_points = featureNames.map((feature, f_index) => ({
-        x: scaleX(f_index),
-        y: scaleY[feature](instance[feature]),
+      const path_points = this.state.featureNames.map((feature, f_index) => ({
+        x: this.state.scaleX(f_index),
+        y: this.state.scaleY[feature](instance[feature]),
       }));
 
       // get styles
-      const scaledForColor = scaleColor(instance[colorCriteria]);
+      const scaledForColor = this.state.scaleColor(
+        instance[this.state.colorCriteria]
+      );
       let color = d3.interpolateYlGnBu(scaledForColor);
       let strokeWidth = 2;
       let opacity = 0.2;
@@ -111,49 +135,59 @@ class PCP extends React.Component {
         opacity = 1;
       }
 
-      // draw a line for a instance
-      svg
+      // draw a instance as a line
+      this.state.svg
         .append("path")
-        .attr("d", lineBasis(path_points))
+        .attr("d", this.state.lineBasis(path_points))
         .attr("fill", "none")
         .attr("stroke", color)
         .attr("stroke-width", strokeWidth)
         .attr("opacity", opacity)
         .attr("class", "instance-line");
     });
+  }
 
+  drawAxes() {
     // draw axis lines and add filter
-    featureNames.forEach((feature, f_index) => {
+    this.state.featureNames.forEach((feature, f_index) => {
       // column name
-      svg
+      this.state.svg
         .append("text")
         .text(feature)
-        .attr("x", scaleX(f_index))
+        .attr("x", this.state.scaleX(f_index))
         .attr("y", 15)
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "hanging");
 
       // axis line
-      svg
+      this.state.svg
         .append("line")
-        .attr("x1", scaleX(f_index))
-        .attr("x2", scaleX(f_index))
-        .attr("y1", scaleY[feature](this.props.features[feature].min))
-        .attr("y2", scaleY[feature](this.props.features[feature].max))
+        .attr("x1", this.state.scaleX(f_index))
+        .attr("x2", this.state.scaleX(f_index))
+        .attr(
+          "y1",
+          this.state.scaleY[feature](this.props.features[feature].min)
+        )
+        .attr(
+          "y2",
+          this.state.scaleY[feature](this.props.features[feature].max)
+        )
         .attr("stroke", "#AAA")
         .attr("stroke-width", 2);
     });
+  }
 
+  addFilterZone() {
     // add drag filter zone
-    featureNames.forEach((feature, f_index) => {
+    this.state.featureNames.forEach((feature, f_index) => {
       let filterInfo = { createY: 0, startY: 0, height: 0 };
       let filterRect;
-      svg
+      this.state.svg
         .append("rect")
-        .attr("x", scaleX(f_index) - 5)
-        .attr("y", scaleY[feature](this.props.features[feature].max))
+        .attr("x", this.state.scaleX(f_index) - 5)
+        .attr("y", this.state.scaleY[feature](this.props.features[feature].max))
         .attr("width", 10)
-        .attr("height", graphH)
+        .attr("height", this.state.graphH)
         .attr("fill", "#fff")
         .attr("opacity", 0.2)
         .call(
@@ -162,8 +196,8 @@ class PCP extends React.Component {
             .on("start", () => {
               filterInfo.createY = d3.event.y;
               filterInfo.startY = d3.event.y;
-              filterRect = svg.append("rect").attrs({
-                x: scaleX(f_index) - 5,
+              filterRect = this.state.svg.append("rect").attrs({
+                x: this.state.scaleX(f_index) - 5,
                 y: d3.eventY,
                 width: 10,
                 height: 0,
@@ -186,8 +220,10 @@ class PCP extends React.Component {
               // 필터링 처리
               this.filter(
                 feature,
-                scaleBackY[feature](filterInfo.startY + filterInfo.height),
-                scaleBackY[feature](filterInfo.startY)
+                this.state.scaleBackY[feature](
+                  filterInfo.startY + filterInfo.height
+                ),
+                this.state.scaleBackY[feature](filterInfo.startY)
               );
 
               // TODO: 크기 작을때 삭제
