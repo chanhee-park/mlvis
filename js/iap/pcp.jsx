@@ -1,18 +1,23 @@
 class PCP extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { firstDraw: true };
+    this.state = {
+      firstDraw: true,
+      augFeatures: new Set(["holiday", "weather"]),
+    };
   }
 
   componentDidMount() {
     this.setDrawingOption();
+    this.augmentateInstances();
   }
 
   componentDidUpdate() {
     if (this.state.firstDraw) {
       this.setState({ firstDraw: false });
-      this.draw();
+      this.drawAll();
     } else {
+      this.drawColumnNames();
       this.drawInstances();
     }
   }
@@ -94,10 +99,11 @@ class PCP extends React.Component {
     });
   }
 
-  draw() {
+  drawAll() {
     this.state.svg.selectAll("*").remove();
-    this.drawInstances();
     this.drawAxes();
+    this.drawColumnNames();
+    this.drawInstances();
     this.addFilterZone();
   }
 
@@ -147,18 +153,45 @@ class PCP extends React.Component {
     });
   }
 
-  drawAxes() {
-    // draw axis lines and add filter
+  drawColumnNames() {
+    this.state.svg.selectAll(".column_name").remove();
+
     this.state.featureNames.forEach((feature, f_index) => {
-      // column name
+      // check box for augmentation option
+      let checkBox = this.state.augFeatures.has(feature) ? "■" : "□";
+      if (feature == "real" || feature == "pred" || feature == "diff") {
+        checkBox = "";
+      }
+
       this.state.svg
         .append("text")
-        .text(feature)
+        .text(`${feature} ${checkBox}`)
         .attr("x", this.state.scaleX(f_index))
         .attr("y", 15)
         .attr("text-anchor", "middle")
-        .attr("alignment-baseline", "hanging");
+        .attr("alignment-baseline", "hanging")
+        .attr("class", "column_name cursor-pointer")
+        .on("click", () => {
+          if (feature == "real" || feature == "pred" || feature == "diff") {
+            return;
+          }
+          let newAugFeatures = this.state.augFeatures;
+          if (newAugFeatures.has(feature)) {
+            newAugFeatures.delete(feature);
+          } else {
+            newAugFeatures.add(feature);
+          }
+          this.setState({ augFeatures: newAugFeatures });
+          this.augmentateInstances();
+        });
+    });
+  }
 
+  drawAxes() {
+    this.state.svg.selectAll(".axis_line").remove();
+
+    // draw axis lines and add filter
+    this.state.featureNames.forEach((feature, f_index) => {
       // axis line
       this.state.svg
         .append("line")
@@ -173,7 +206,8 @@ class PCP extends React.Component {
           this.state.scaleY[feature](this.props.features[feature].max)
         )
         .attr("stroke", "#AAA")
-        .attr("stroke-width", 2);
+        .attr("stroke-width", 2)
+        .attr("class", "axis_lien");
     });
   }
 
@@ -213,7 +247,7 @@ class PCP extends React.Component {
                 y: filterInfo.startY,
                 height: filterInfo.height,
               });
-              // todo: 영역 넘어갈 때 처리
+              // TODO: 영역 넘어갈 때 처리
               // https://github.com/chanhee-park/parallelCoordinateTitanic/blob/master/scripts/parallel_201521076.js
             })
             .on("end", () => {
@@ -225,7 +259,7 @@ class PCP extends React.Component {
                 ),
                 this.state.scaleBackY[feature](filterInfo.startY)
               );
-
+              this.augmentateInstances();
               // TODO: 크기 작을때 삭제
             })
         );
@@ -237,10 +271,41 @@ class PCP extends React.Component {
       this.props.selectedInstances.length > 0
         ? this.props.selectedInstances
         : this.props.instances;
-
     const filtered = original.filter((v) => v[fName] >= from && v[fName] <= to);
-
     this.props.setSelectedInstances(filtered);
+  }
+
+  augmentateInstances() {
+    const augmentatedAll = {};
+    this.props.selectedInstances.forEach((v) => {
+      const augmentatedByInstance = this.getAugmentationByInstance(v);
+      augmentatedAll[Data.getInstanceID(v)] = augmentatedByInstance;
+    });
+    this.props.setAugmentatedInstances(augmentatedAll);
+  }
+
+  getAugmentationByInstance(instance) {
+    // get number of Augmentation
+    let total = 1;
+    this.state.augFeatures.forEach((f) => {
+      total *= this.props.features[f].uniqueValues.size;
+    });
+
+    // init
+    const augmentatedByInstance = [];
+    for (let i = 0; i < total; i++) {
+      augmentatedByInstance.push({ ...instance });
+    }
+
+    // set values
+    this.state.augFeatures.forEach((f) => {
+      for (let i = 0; i < total; i++) {
+        const uniqs = this.props.features[f].uniqueValues;
+        augmentatedByInstance[i][f] = uniqs[i % uniqs.size];
+      }
+    });
+
+    return augmentatedByInstance;
   }
 
   render() {

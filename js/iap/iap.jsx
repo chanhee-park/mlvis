@@ -5,6 +5,7 @@ function IAP({
   selectedInstances,
   focusedInstance,
   setSelectedInstances,
+  setAugmentatedInstances,
 }) {
   return (
     <div className="block block__iap">
@@ -14,6 +15,7 @@ function IAP({
         selectedInstances={selectedInstances}
         focusedInstance={focusedInstance}
         setSelectedInstances={setSelectedInstances}
+        setAugmentatedInstances={setAugmentatedInstances}
       />
       <Scatter
         instances={instances}

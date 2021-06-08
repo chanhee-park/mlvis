@@ -4,8 +4,9 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedInstances: this.props.instances,
+      selectedInstances: this.props.instances, // []
       focusedInstance: undefined, // this.props.instances[3]
+      augmentatedInstances: {},
     };
   }
 
@@ -15,6 +16,10 @@ class App extends React.Component {
 
   setFocusedInstance(instance) {
     this.setState({ focusedInstance: instance });
+  }
+
+  setAugmentatedInstances(instances) {
+    this.setState({ augmentatedInstances: instances });
   }
 
   render() {
@@ -31,6 +36,7 @@ class App extends React.Component {
               selectedInstances={this.state.selectedInstances}
               focusedInstance={this.state.focusedInstance}
               setSelectedInstances={(v) => this.setSelectedInstances(v)}
+              setAugmentatedInstances={(v) => this.setAugmentatedInstances(v)}
             />
           </div>
           <div className="zone zone--right-bottom">
@@ -38,6 +44,7 @@ class App extends React.Component {
               instances={this.state.selectedInstances}
               features={this.props.features}
               focusedInstance={this.state.focusedInstance}
+              augmentatedInstances={this.state.augmentatedInstances}
               setSelectedInstances={(v) => this.setSelectedInstances(v)}
               setFocusedInstance={(v) => this.setFocusedInstance(v)}
             />

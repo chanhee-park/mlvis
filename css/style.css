@@ -12,6 +12,10 @@ svg {
   height: 100%;
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
 /* Layout Hierarchy:
  * app -> zone (-> zone) -> block -> (component-group ->) component
  */
@@ -81,7 +85,7 @@ svg {
 }
 
 .fip__item__has {
-  color: #AAA;
+  color: #aaa;
 }
 
 .block__iap {
