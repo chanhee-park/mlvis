@@ -86,83 +86,9 @@ svg {
 
 .block__iap {
   display: grid;
-  grid-template-columns: 5fr 1fr;
-}
-
-.iap__component-group--left {
-  display: grid;
-  grid-template-rows: 1fr 150px;
-}
-
-.iap__component-group--right {
-  display: grid;
-}
-
-.component__agumentator {
-  height: 100%;
-  overflow-y: hidden;
-}
-
-.agumentator__add-button {
-  width: 75%;
-  height: 20px;
-  line-height: 20px;
-  font-size: 16px;
-  font-weight: 900;
-  background-color: #aaf;
-  text-align: center;
-  border-radius: 10px;
-  margin: auto;
-}
-
-.agumentator__histograms {
-  width: 100%;
-  height: calc(100% - 30px);
-  overflow-y: scroll;
-}
-
-.component__histogram {
-  width: 95%;
-  height: 130px;
-  padding: 10px;
-  margin: 10px 2px 10px 0px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.histogram__header {
-  height: 28px;
-  line-height: 28px;
-  font-size: 24px;
-  line-height: 28px;
-}
-
-.histogram__title {
-  float: left;
-  height: 28px;
-}
-
-.component__histogram .button {
-  float: right;
-  height: 28px;
-  font-size: 16px;
+  grid-template-rows: 1fr 160px;
 }
 
 .histogram__graph {
   height: 50px;
-}
-
-.histogram__range-description {
-  font-size: 16px;
-  color: #555;
-  padding: 4px;
-}
-
-.histogram-add-button__wrapper {
-  width: 95%;
-  height: 50px;
-  padding: 10px;
-  margin: 10px 2px 10px 0px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
 }
