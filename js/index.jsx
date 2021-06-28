@@ -9,8 +9,8 @@ window.onload = async () => {
 };
 
 const CONSTANTS = {
-  data_src: "/data/results.min2.csv",
-  importances_src: "/data/lr_result-total.txt",
+  data_src: "/data/bike/results.min2.csv",
+  importances_src: "/data/bike/lr_result-total.txt",
 };
 
 const Data = {

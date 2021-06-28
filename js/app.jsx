@@ -1,5 +1,5 @@
 // Layout Hierarchy:
-// app -> zone (-> zone) -> block -> (component group ->) component
+// app -> block -> component
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -25,31 +25,22 @@ class App extends React.Component {
   render() {
     return (
       <div className="app" id="app">
-        <div className="zone zone--left">
-          <FIP importances={this.props.importances} />
-        </div>
-        <div className="zone zone--right">
-          <div className="zone zone--right-top">
-            <IAP
-              instances={this.props.instances}
-              features={this.props.features}
-              selectedInstances={this.state.selectedInstances}
-              focusedInstance={this.state.focusedInstance}
-              setSelectedInstances={(v) => this.setSelectedInstances(v)}
-              setAugmentatedInstances={(v) => this.setAugmentatedInstances(v)}
-            />
-          </div>
-          <div className="zone zone--right-bottom">
-            <Table
-              instances={this.state.selectedInstances}
-              features={this.props.features}
-              focusedInstance={this.state.focusedInstance}
-              augmentatedInstances={this.state.augmentatedInstances}
-              setSelectedInstances={(v) => this.setSelectedInstances(v)}
-              setFocusedInstance={(v) => this.setFocusedInstance(v)}
-            />
-          </div>
-        </div>
+          <IAP
+            instances={this.props.instances}
+            features={this.props.features}
+            selectedInstances={this.state.selectedInstances}
+            focusedInstance={this.state.focusedInstance}
+            setSelectedInstances={(v) => this.setSelectedInstances(v)}
+            setAugmentatedInstances={(v) => this.setAugmentatedInstances(v)}
+          />
+        <Table
+          instances={this.state.selectedInstances}
+          features={this.props.features}
+          focusedInstance={this.state.focusedInstance}
+          augmentatedInstances={this.state.augmentatedInstances}
+          setSelectedInstances={(v) => this.setSelectedInstances(v)}
+          setFocusedInstance={(v) => this.setFocusedInstance(v)}
+        />
       </div>
     );
   }

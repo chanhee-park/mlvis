@@ -1,6 +1,6 @@
 .block.block__table {
   box-sizing: border-box;
-  overflow: scroll;
+  overflow-y: scroll;
 }
 
 table {
@@ -15,7 +15,6 @@ thead {
 
 th {
   background: #fff;
-  /* TODO: tr {display:block} 의 경우 th 상단 고정이 안됨 */
   position: sticky;
   top: 0;
   z-index: 1;
@@ -30,7 +29,6 @@ th {
 }
 
 tr {
-  display: block;
   min-height: 28px;
   padding: 2px 0;
 }

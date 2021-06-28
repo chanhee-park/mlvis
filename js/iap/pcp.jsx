@@ -276,12 +276,12 @@ class PCP extends React.Component {
   }
 
   augmentateInstances() {
-    const augmentatedAll = {};
+    const augmentedAll = {};
     this.props.selectedInstances.forEach((v) => {
-      const augmentatedByInstance = this.getAugmentationByInstance(v);
-      augmentatedAll[Data.getInstanceID(v)] = augmentatedByInstance;
+      const augmentedByInstance = this.getAugmentationByInstance(v);
+      augmentedAll[Data.getInstanceID(v)] = augmentedByInstance;
     });
-    this.props.setAugmentatedInstances(augmentatedAll);
+    this.props.setAugmentatedInstances(augmentedAll);
   }
 
   getAugmentationByInstance(instance) {
@@ -292,20 +292,27 @@ class PCP extends React.Component {
     });
 
     // init
-    const augmentatedByInstance = [];
+    const augmentedByInstance = [];
     for (let i = 0; i < total; i++) {
-      augmentatedByInstance.push({ ...instance });
+      const dup = { ...instance };
+      dup.original = Data.getInstanceID(instance);
+      dup.originalPred = dup.pred;
+      dup.pred = dup.pred;
+      // dup.pred = Model.predict(dup);
+      delete dup.real;
+      delete dup.diff;
+      augmentedByInstance.push(dup);
     }
 
     // set values
     this.state.augFeatures.forEach((f) => {
       for (let i = 0; i < total; i++) {
         const uniqs = this.props.features[f].uniqueValues;
-        augmentatedByInstance[i][f] = uniqs[i % uniqs.size];
+        augmentedByInstance[i][f] = uniqs[i % uniqs.size];
       }
     });
 
-    return augmentatedByInstance;
+    return augmentedByInstance;
   }
 
   render() {
