@@ -29,6 +29,9 @@ th {
 }
 
 tr {
+   /* display: block; 있으면 헤더 고정 안됨 */
+   /* display: block; 없으면 행 여는거 안됨 */
+  /* display: block; */
   min-height: 28px;
   padding: 2px 0;
 }

@@ -3,7 +3,7 @@ class PCP extends React.Component {
     super(props);
     this.state = {
       firstDraw: true,
-      augFeatures: new Set(["holiday", "weather"]),
+      augFeatures: new Set([]),
     };
   }
 
@@ -19,6 +19,10 @@ class PCP extends React.Component {
     } else {
       this.drawColumnNames();
       this.drawInstances();
+      this.addFilterZone();
+      d3.selectAll("text").raise();
+      d3.select(".focused-instance-line").raise();
+      d3.selectAll(".filter").raise();
     }
   }
 
@@ -104,7 +108,6 @@ class PCP extends React.Component {
     this.drawAxes();
     this.drawColumnNames();
     this.drawInstances();
-    this.addFilterZone();
   }
 
   drawInstances() {
@@ -124,7 +127,7 @@ class PCP extends React.Component {
       );
       let color = d3.interpolateYlGnBu(scaledForColor);
       let strokeWidth = 2;
-      let opacity = 0.2;
+      let opacity = 0.1;
 
       // style for not-selected when there are any selected instance.
       if (
@@ -135,7 +138,8 @@ class PCP extends React.Component {
       }
 
       // style for focused
-      if (this.props.focusedInstance === instance) {
+      const isFocused = this.props.focusedInstance === instance;
+      if (isFocused) {
         color = "#F95";
         strokeWidth = 5;
         opacity = 1;
@@ -149,7 +153,7 @@ class PCP extends React.Component {
         .attr("stroke", color)
         .attr("stroke-width", strokeWidth)
         .attr("opacity", opacity)
-        .attr("class", "instance-line");
+        .attr("class", isFocused ? "focused-instance-line" : "instance-line");
     });
   }
 
@@ -192,22 +196,41 @@ class PCP extends React.Component {
 
     // draw axis lines and add filter
     this.state.featureNames.forEach((feature, f_index) => {
+      const x = this.state.scaleX(f_index);
+      const y_min = this.state.scaleY[feature](
+        this.props.features[feature].min
+      );
+      const y_max = this.state.scaleY[feature](
+        this.props.features[feature].max
+      );
+
       // axis line
       this.state.svg
         .append("line")
-        .attr("x1", this.state.scaleX(f_index))
-        .attr("x2", this.state.scaleX(f_index))
-        .attr(
-          "y1",
-          this.state.scaleY[feature](this.props.features[feature].min)
-        )
-        .attr(
-          "y2",
-          this.state.scaleY[feature](this.props.features[feature].max)
-        )
+        .attr("x1", x)
+        .attr("x2", x)
+        .attr("y1", y_min)
+        .attr("y2", y_max)
         .attr("stroke", "#AAA")
         .attr("stroke-width", 2)
         .attr("class", "axis_lien");
+
+      // write min and max values
+      this.state.svg
+        .append("text")
+        .text(Math.ceil(this.props.features[feature].min))
+        .attr("x", x - 5)
+        .attr("y", y_min)
+        .attr("text-anchor", "end")
+        .attr("alignment-baseline", "baseline");
+
+      this.state.svg
+        .append("text")
+        .text(Math.floor(this.props.features[feature].max))
+        .attr("x", this.state.scaleX(f_index) - 5)
+        .attr("y", y_max)
+        .attr("text-anchor", "end")
+        .attr("alignment-baseline", "hanging");
     });
   }
 
@@ -218,12 +241,13 @@ class PCP extends React.Component {
       let filterRect;
       this.state.svg
         .append("rect")
-        .attr("x", this.state.scaleX(f_index) - 5)
+        .attr("x", this.state.scaleX(f_index) - 10)
         .attr("y", this.state.scaleY[feature](this.props.features[feature].max))
-        .attr("width", 10)
+        .attr("width", 20)
         .attr("height", this.state.graphH)
         .attr("fill", "#fff")
-        .attr("opacity", 0.2)
+        .attr("opacity", 0)
+        .attr("class", "filter")
         .call(
           d3
             .drag()
@@ -231,13 +255,13 @@ class PCP extends React.Component {
               filterInfo.createY = d3.event.y;
               filterInfo.startY = d3.event.y;
               filterRect = this.state.svg.append("rect").attrs({
-                x: this.state.scaleX(f_index) - 5,
+                x: this.state.scaleX(f_index) - 10,
                 y: d3.eventY,
-                width: 10,
+                width: 20,
                 height: 0,
                 fill: "#58F",
                 opacity: 0.5,
-                class: "temp_filter_rect",
+                class: "filter",
               });
             })
             .on("drag", () => {

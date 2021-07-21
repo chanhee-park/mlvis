@@ -91,7 +91,7 @@ class TableFocusedCell extends React.Component {
       <td className="focused">
         <div className="focused-card">
           <div className="wellcome-message">{`
-              This is a focused instance and it's augmentated instances.
+              These are augmentated instances of the focused instance.
             `}</div>
           <div>
             {this.props.augmentatedInstances.map((v, i) => {

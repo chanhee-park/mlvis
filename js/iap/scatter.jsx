@@ -21,13 +21,13 @@ class Scatter extends React.Component {
     const svgH = svg.style("height").replace("px", "");
     const paddingT = 30;
     const paddingR = 10;
-    const paddingB = 0;
+    const paddingB = 10;
     const paddingL = 30;
     const graphW = svgW - (paddingL + paddingR);
     const graphH = svgH - (paddingT + paddingB);
 
     const featureNames = Object.keys(this.props.features);
-    const scatterSize = Math.min(graphW / featureNames.length, graphH);
+    const scatterSize = Math.min(graphW / featureNames.length, graphH) - 10;
 
     // get scale functions for each feature
     const scaleAxisX = d3
@@ -102,7 +102,7 @@ class Scatter extends React.Component {
       const scaledForColor = scaleColor(instance[colorCriteria]);
       let color = d3.interpolateYlGnBu(scaledForColor);
       let r = 2;
-      let opacity = 0.2;
+      let opacity = 0.25;
 
       // style for not-selected when there are any selected instance.
       if (

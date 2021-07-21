@@ -1,0 +1,13 @@
+sex
+  - female: 0
+  - male: 1
+
+smoke
+  - no: 0
+  - yes: 1
+
+region
+  - northeast: 0
+  - northwest: 1
+  - southeast: 2
+  - southwest: 3
