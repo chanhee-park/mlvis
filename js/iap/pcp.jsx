@@ -9,7 +9,6 @@ class PCP extends React.Component {
 
   componentDidMount() {
     this.setDrawingOption();
-    this.augmentateInstances();
   }
 
   componentDidUpdate() {
@@ -186,7 +185,6 @@ class PCP extends React.Component {
             newAugFeatures.add(feature);
           }
           this.setState({ augFeatures: newAugFeatures });
-          this.augmentateInstances();
         });
     });
   }
@@ -283,7 +281,6 @@ class PCP extends React.Component {
                 ),
                 this.state.scaleBackY[feature](filterInfo.startY)
               );
-              this.augmentateInstances();
               // TODO: 크기 작을때 삭제
             })
         );
@@ -297,46 +294,6 @@ class PCP extends React.Component {
         : this.props.instances;
     const filtered = original.filter((v) => v[fName] >= from && v[fName] <= to);
     this.props.setSelectedInstances(filtered);
-  }
-
-  augmentateInstances() {
-    const augmentedAll = {};
-    this.props.selectedInstances.forEach((v) => {
-      const augmentedByInstance = this.getAugmentationByInstance(v);
-      augmentedAll[Data.getInstanceID(v)] = augmentedByInstance;
-    });
-    this.props.setAugmentatedInstances(augmentedAll);
-  }
-
-  getAugmentationByInstance(instance) {
-    // get number of Augmentation
-    let total = 1;
-    this.state.augFeatures.forEach((f) => {
-      total *= this.props.features[f].uniqueValues.size;
-    });
-
-    // init
-    const augmentedByInstance = [];
-    for (let i = 0; i < total; i++) {
-      const dup = { ...instance };
-      dup.original = Data.getInstanceID(instance);
-      dup.originalPred = dup.pred;
-      dup.pred = dup.pred;
-      // dup.pred = Model.predict(dup);
-      delete dup.real;
-      delete dup.diff;
-      augmentedByInstance.push(dup);
-    }
-
-    // set values
-    this.state.augFeatures.forEach((f) => {
-      for (let i = 0; i < total; i++) {
-        const uniqs = this.props.features[f].uniqueValues;
-        augmentedByInstance[i][f] = uniqs[i % uniqs.size];
-      }
-    });
-
-    return augmentedByInstance;
   }
 
   render() {

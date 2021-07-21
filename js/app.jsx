@@ -6,7 +6,6 @@ class App extends React.Component {
     this.state = {
       selectedInstances: this.props.instances, // []
       focusedInstance: undefined, // this.props.instances[3]
-      augmentatedInstances: {},
     };
   }
 
@@ -18,10 +17,6 @@ class App extends React.Component {
     this.setState({ focusedInstance: instance });
   }
 
-  setAugmentatedInstances(instances) {
-    this.setState({ augmentatedInstances: instances });
-  }
-
   render() {
     return (
       <div className="app" id="app">
@@ -31,13 +26,11 @@ class App extends React.Component {
             selectedInstances={this.state.selectedInstances}
             focusedInstance={this.state.focusedInstance}
             setSelectedInstances={(v) => this.setSelectedInstances(v)}
-            setAugmentatedInstances={(v) => this.setAugmentatedInstances(v)}
           />
         <Table
           instances={this.state.selectedInstances}
           features={this.props.features}
           focusedInstance={this.state.focusedInstance}
-          augmentatedInstances={this.state.augmentatedInstances}
           setSelectedInstances={(v) => this.setSelectedInstances(v)}
           setFocusedInstance={(v) => this.setFocusedInstance(v)}
         />

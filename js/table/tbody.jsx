@@ -2,18 +2,13 @@ class TableBody extends React.Component {
   render() {
     return (
       <tbody>
-        {this.props.instances.map((v) => {
-          const augmentatedByInstance =
-            this.props.augmentatedInstances[Data.getInstanceID(v)];
+        {this.props.instances.map((instance) => {
           return (
             <TableRow
-              key={`tr-out-${Data.getInstanceID(v)}`}
-              instance={v}
+              key={`tr-out-${instance.id}`}
+              instance={instance}
               features={this.props.features}
-              augmentatedInstances={
-                augmentatedByInstance ? augmentatedByInstance : []
-              }
-              isFocused={v === this.props.focusedInstance}
+              isFocused={instance === this.props.focusedInstance}
               setFocusedInstance={this.props.setFocusedInstance}
             />
           );
@@ -25,7 +20,7 @@ class TableBody extends React.Component {
 
 class TableRow extends React.Component {
   render() {
-    const instanceID = Data.getInstanceID(this.props.instance);
+    const instanceID = this.props.instance.id;
     return (
       <tr
         key={`tr-in-${instanceID}`}
@@ -50,7 +45,6 @@ class TableRow extends React.Component {
         {this.props.isFocused && (
           <TableFocusedCell
             instance={this.props.instance}
-            augmentatedInstances={this.props.augmentatedInstances}
           />
         )}
       </tr>
@@ -94,13 +88,6 @@ class TableFocusedCell extends React.Component {
               These are augmentated instances of the focused instance.
             `}</div>
           <div>
-            {this.props.augmentatedInstances.map((v, i) => {
-              return (
-                <div
-                  key={`${Data.getInstanceID(v)}-augmentation_${i}`}
-                >{`${i+1} ${JSON.stringify(v)}`}</div>
-              );
-            })}
           </div>
         </div>
       </td>

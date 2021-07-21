@@ -13,7 +13,6 @@ class Table extends React.Component {
             features={this.props.features}
             instances={this.props.instances}
             focusedInstance={this.props.focusedInstance}
-            augmentatedInstances={this.props.augmentatedInstances}
             setFocusedInstance={this.props.setFocusedInstance}
           />
         </table>
