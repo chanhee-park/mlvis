@@ -1,12 +1,22 @@
 window.onload = async () => {
-  const instances = await Data.setInstances("insurance");
+  const dataname = "insurance";
+  const instances = await Data.setInstances(dataname);
   const features = Data.getFeatureInfo(instances);
-  const augmented = Data.augmentateAllInstances(instances, features);
-  
+  const augmented = Data.augmentateAllInstances(instances, features, dataname);
+
   console.log("Onload");
   console.log("Data setting ...");
   console.log({ instances, features, augmented });
   console.log("Data fully setted.");
+
+  // TODO: 그룹 만들기 
+  // 자동 추천 그룹: 
+  //   1) 기존 인스턴스 기반 
+  //   2) 변경 피쳐 기반 - 이건 상승 하락 별로 조합을 만든다. 
+  //      eg. 나이 상승, 나이 상승 및 bmi 하락
+  // 그룹은 인스턴스가 아니라 인스터스의 아이디를 가지고 있습니다. 
+  // 그룹은 각 피쳐별 통계치를 가지고 있습니다. min, max, 평균 
+  //   통계치 활용처 => 상자그림(피쳐), 정렬 (diff)
 
   ReactDOM.render(
     <App instances={instances} features={features} />,
@@ -48,7 +58,7 @@ const Data = {
 
     for (let i = 0; i < instances.length; i++) {
       instances[i].pred = preds[i];
-      instances[i].diff = instances[i].real - instances[i].pred;
+      instances[i].diff = instances[i].pred - instances[i].real;
       instances[i].id = i;
       if (Math.random() > 0.8) {
         randomSamples.push(instances[i]);
@@ -110,7 +120,7 @@ const Data = {
     return ret;
   },
 
-  augmentateAllInstances: (instances, featureInfo) => {
+  augmentateAllInstances: (instances, featureInfo, dataname) => {
     // using random augmentation
     // 변하는 피쳐의 수: 2개 이하 모든 조합
     // 피쳐의 변화 범위: random 4개와 자기 자신
@@ -125,17 +135,25 @@ const Data = {
     const augFeatureCombs = Data.combinations(featureNames, 1);
 
     // get aug instances
-    let ret = [];
+    let augs = [];
     instances.forEach((instance) => {
-      const augs = Data.augmentateInstance(
+      const augsInstance = Data.augmentateInstance(
         instance,
         augFeatureCombs,
         featureInfo
       );
-      ret = ret.concat(augs);
+      augs = augs.concat(augsInstance);
     });
 
-    return ret;
+    // pred for augs
+    const preds = Model.predict(dataname, augs);
+    for (let i = 0; i < augs.length; i++) {
+      augs[i].pred = preds[i];
+      augs[i].diff = augs[i].pred + augs[i].originalPred;
+      augs[i].id = `${augs.originalId}-${i}`;
+    }
+
+    return augs;
   },
 
   augmentateInstance: (instance, augFeatureCombs, featureInfo) => {
