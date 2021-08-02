@@ -20,16 +20,18 @@ class App extends React.Component {
   render() {
     return (
       <div className="app" id="app">
-          <IAP
-            instances={this.props.instances}
-            features={this.props.features}
-            selectedInstances={this.state.selectedInstances}
-            focusedInstance={this.state.focusedInstance}
-            setSelectedInstances={(v) => this.setSelectedInstances(v)}
-          />
+        <IAP
+          instances={this.props.instances}
+          features={this.props.features}
+          selectedInstances={this.state.selectedInstances}
+          focusedInstance={this.state.focusedInstance}
+          setSelectedInstances={(v) => this.setSelectedInstances(v)}
+        />
         <Table
           instances={this.state.selectedInstances}
           features={this.props.features}
+          augGroups={this.props.augGroups}
+          augmentions={this.props.augmentions}
           focusedInstance={this.state.focusedInstance}
           setSelectedInstances={(v) => this.setSelectedInstances(v)}
           setFocusedInstance={(v) => this.setFocusedInstance(v)}

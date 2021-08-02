@@ -102,7 +102,7 @@ class Scatter extends React.Component {
       const scaledForColor = scaleColor(instance[colorCriteria]);
       let color = d3.interpolateYlGnBu(scaledForColor);
       let r = 2;
-      let opacity = 0.25;
+      let opacity = 0.5;
 
       // style for not-selected when there are any selected instance.
       if (

@@ -126,7 +126,7 @@ class PCP extends React.Component {
       );
       let color = d3.interpolateYlGnBu(scaledForColor);
       let strokeWidth = 2;
-      let opacity = 0.1;
+      let opacity = 0.2;
 
       // style for not-selected when there are any selected instance.
       if (
