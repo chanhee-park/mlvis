@@ -1,5 +1,13 @@
 // Table Exploring Agumentated Instances
 class Table extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      augGroups: Data.groupAugs(this.props.augmentions),
+    };
+    console.log("groups:", this.state.augGroups);
+  }
+
   render() {
     return (
       <div className="block block__table">
@@ -7,11 +15,13 @@ class Table extends React.Component {
           <TableHeader
             features={this.props.features}
             instances={this.props.instances}
-            setSelectedInstances={(v) => this.props.setSelectedInstances(v)}
+            setSelectedInstances={this.props.setSelectedInstances}
           />
           <TableBody
-            features={this.props.features}
             instances={this.props.instances}
+            features={this.props.features}
+            augGroups={this.state.augGroups}
+            augmentions={this.props.augmentions}
             focusedInstance={this.props.focusedInstance}
             setFocusedInstance={this.props.setFocusedInstance}
           />

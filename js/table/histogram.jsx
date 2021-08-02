@@ -4,8 +4,10 @@ class HistogramGraph extends React.Component {
   }
 
   draw() {
+    return;
+    
     // variable name shortification
-    const feature = this.props.feature;
+    const feature = this.props.feautre;
 
     // set a svg
     const svg = d3.select(`#${this.props.id}`);

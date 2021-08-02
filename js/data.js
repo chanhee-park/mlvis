@@ -101,7 +101,7 @@ const Data = {
       augs[i].id = `${augs[i].original_id}-aug-${i}`;
     }
 
-    return Data.arr2obj(augs);
+    return augs;
   },
 
   augmentateInstance: (instance, augFeatureCombs, featureInfo) => {
@@ -158,47 +158,57 @@ const Data = {
     return ret;
   },
 
-  groupAugs: (augInstances) => {
+  groupAugs: (augs) => {
     const groups = {};
-    Object.values(augInstances).forEach((aug) => {
+    augs.forEach((aug) => {
       let stackedConditionId = "";
       // 어떤 그룹에 들어갈지 판별한다.
       aug.augFeatures.forEach((feature) => {
         let conditionId = "";
         if (aug[`original_${feature}`] < aug[feature]) {
           conditionId = `${feature}+`;
-          stackedConditionId += `/${feature}+`;
+          stackedConditionId += `${feature}+/`;
         } else {
           conditionId = `${feature}-`;
-          stackedConditionId += `/${feature}-`;
+          stackedConditionId += `${feature}-/`;
         }
 
         // 그룹에 집어 넣는다. (변경 피쳐 1개 마다 각각 그룹에 넣는다.)
         if (groups.hasOwnProperty(conditionId)) {
           groups[conditionId].instanceIds.push(aug.id);
         } else {
-          groups[conditionId] = { instanceIds: [aug.id] };
+          groups[conditionId] = {
+            key: conditionId,
+            instanceIds: [aug.id],
+            augFeatures: [feature],
+          };
         }
       });
 
       // 2개 이상 피처가 바뀐 경우, 쌓인 좋건에 의한 그룹에 집어 넣는다.
       if (aug.augFeatures.size >= 2) {
+        stackedConditionId = stackedConditionId.slice(0, -1);
         if (groups.hasOwnProperty(stackedConditionId)) {
           groups[stackedConditionId].instanceIds.push(aug.id);
         } else {
-          groups[stackedConditionId] = { instanceIds: [aug.id] };
+          groups[stackedConditionId] = {
+            key: stackedConditionId,
+            instanceIds: [aug.id],
+            augFeatures: aug.augFeatures,
+          };
         }
       }
     });
 
     Object.values(groups).forEach((group) => {
-      group.stat = Data.getStatOfGroup(augInstances, group.instanceIds);
+      group.stat = Data.getStatOfGroup(augs, group.instanceIds);
     });
 
     return groups;
   },
 
-  getStatOfGroup: (totalInstancesObj, groupInstanceIds) => {
+  getStatOfGroup: (totalInstances, groupInstanceIds) => {
+    const totalInstancesObj = Data.arr2obj(totalInstances);
     const stat = { diffMean: 0, absDiffMean: 0 };
 
     groupInstanceIds.forEach((id) => {
@@ -274,5 +284,19 @@ const Data = {
       }
     }
     return combs;
+  },
+};
+
+const CONSTANTS = {
+  datatype: {
+    age: "numeric",
+    sex: "categorical",
+    bmi: "numeric",
+    children: "numeric",
+    smoker: "categorical",
+    north_east: "categorical",
+    north_west: "categorical",
+    south_east: "categorical",
+    south_west: "categorical",
   },
 };

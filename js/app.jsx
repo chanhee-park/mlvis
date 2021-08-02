@@ -5,16 +5,28 @@ class App extends React.Component {
     super(props);
     this.state = {
       selectedInstances: this.props.instances, // []
+      selectedAugs: this.props.augmentions,
       focusedInstance: undefined, // this.props.instances[3]
     };
   }
 
   setSelectedInstances(instances) {
-    this.setState({ selectedInstances: instances });
+    const newSelectedAugs = this.setSelectedAugs(instances);
+    this.setState({
+      selectedInstances: instances,
+      selectedAugs: newSelectedAugs,
+    });
   }
 
   setFocusedInstance(instance) {
     this.setState({ focusedInstance: instance });
+  }
+
+  getSelectedAugs(selectedInstances) {
+    const idsOfSelectedInstance = selectedInstances.map((e) => e.id);
+    return this.props.augmentions.filter(
+      (aug) => idsOfSelectedInstance.indexOf(aug.original_id) > -1
+    );
   }
 
   render() {
@@ -30,8 +42,7 @@ class App extends React.Component {
         <Table
           instances={this.state.selectedInstances}
           features={this.props.features}
-          augGroups={this.props.augGroups}
-          augmentions={this.props.augmentions}
+          augmentions={this.state.selectedAugs}
           focusedInstance={this.state.focusedInstance}
           setSelectedInstances={(v) => this.setSelectedInstances(v)}
           setFocusedInstance={(v) => this.setFocusedInstance(v)}
