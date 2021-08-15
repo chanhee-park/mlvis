@@ -3,7 +3,7 @@ class Table extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      augGroups: Data.groupAugs(this.props.augmentions),
+      augGroups: Data.groupAugs(this.props.augmentations),
     };
     console.log("groups:", this.state.augGroups);
   }
@@ -21,7 +21,7 @@ class Table extends React.Component {
             instances={this.props.instances}
             features={this.props.features}
             augGroups={this.state.augGroups}
-            augmentions={this.props.augmentions}
+            augmentations={this.props.augmentations}
             focusedInstance={this.props.focusedInstance}
             setFocusedInstance={this.props.setFocusedInstance}
           />

@@ -5,7 +5,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       selectedInstances: this.props.instances, // []
-      selectedAugs: this.props.augmentions,
+      selectedAugs: this.props.augmentations,
       focusedInstance: undefined, // this.props.instances[3]
     };
   }
@@ -24,7 +24,7 @@ class App extends React.Component {
 
   getSelectedAugs(selectedInstances) {
     const idsOfSelectedInstance = selectedInstances.map((e) => e.id);
-    return this.props.augmentions.filter(
+    return this.props.augmentations.filter(
       (aug) => idsOfSelectedInstance.indexOf(aug.original_id) > -1
     );
   }
@@ -42,7 +42,7 @@ class App extends React.Component {
         <Table
           instances={this.state.selectedInstances}
           features={this.props.features}
-          augmentions={this.state.selectedAugs}
+          augmentations={this.state.selectedAugs}
           focusedInstance={this.state.focusedInstance}
           setSelectedInstances={(v) => this.setSelectedInstances(v)}
           setFocusedInstance={(v) => this.setFocusedInstance(v)}

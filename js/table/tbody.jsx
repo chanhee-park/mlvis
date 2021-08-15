@@ -5,7 +5,7 @@ class TableBody extends React.Component {
         {Object.entries(this.props.augGroups).map((ent) => {
           const key = ent[0];
           const group = ent[1];
-          const augsObj = Data.arr2obj(this.props.augmentions);
+          const augsObj = Data.arr2obj(this.props.augmentations);
           return (
             <TableRow
               key={`tr-out-${key}`}
