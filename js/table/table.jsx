@@ -18,7 +18,6 @@ class Table extends React.Component {
             setSelectedInstances={this.props.setSelectedInstances}
           />
           <TableBody
-            instances={this.props.instances}
             features={this.props.features}
             augGroups={this.state.augGroups}
             augmentations={this.props.augmentations}

@@ -8,7 +8,7 @@ const Data = {
       instances[i].pred = preds[i];
       instances[i].diff = instances[i].pred - instances[i].real;
       instances[i].id = i;
-      if (Math.random() > 0.9) {
+      if (Math.random() > 0.8) {
         randomSamples.push(instances[i]);
       }
     }
@@ -33,6 +33,7 @@ const Data = {
     // init
     const ret = {};
     const featureNames = Object.keys(instances[0]);
+    featureNames.pop("index");
     featureNames.forEach(
       (f) =>
         (ret[f] = {
@@ -68,94 +69,37 @@ const Data = {
     return ret;
   },
 
-  augmentateInstances: (instances, featureInfo, dataname) => {
-    // using random augmentation
-    // 변하는 피쳐의 수: 2개 이하 모든 조합
-    // 피쳐의 변화 범위: random 4개와 자기 자신
-    // 총 생성 인스턴스 수: n * mC2 * 5 (n은 기존 인스턴스 수, m은 피쳐 수)
+  augmentateInstances: (instances, featureInfo) => {
+    const augInstances = [];
 
-    // set aug features
+    // unpick features for augmentation
     const featureNames = Object.keys(instances[0]);
     featureNames.pop("id");
+    featureNames.pop("index");
     featureNames.pop("pred");
     featureNames.pop("real");
     featureNames.pop("diff");
-    const augFeatureCombs = Data.combinations(featureNames, 2);
 
     // get aug instances
-    let augs = [];
     instances.forEach((instance) => {
-      const augsInstance = Data.augmentateInstance(
-        instance,
-        augFeatureCombs,
-        featureInfo
-      );
-      augs = augs.concat(augsInstance);
+      for (let i = 0; i < 10; i++) {
+        const augInstance = { ...instance };
+        augInstance.augFeatures = Data.pickRandKItems(featureNames, 1, 2);
+
+        // console.log(augInstance.augFeatures);
+        augInstance.augFeatures.forEach((augFeature) => {
+          // console.log(augFeature);
+          augInstance[`original_${augFeature}`] = instance[augFeature];
+          augInstance[augFeature] = Data.getRandomItem(
+            featureInfo[augFeature].uniqueValues
+          );
+        });
+        // console.log(augInstance);
+        augInstances.push(augInstance);
+      }
     });
 
-    // pred for augs
-    const preds = Model.predict(dataname, augs);
-    for (let i = 0; i < augs.length; i++) {
-      augs[i].pred = preds[i];
-      augs[i].diff = augs[i].pred - augs[i].original_pred;
-      augs[i].id = `${augs[i].original_id}-aug-${i}`;
-    }
-
-    return augs;
-  },
-
-  augmentateInstance: (instance, augFeatureCombs, featureInfo) => {
-    let ret = [];
-    // generate and push aug isntances
-    for (let i = 0; i < augFeatureCombs.length; i++) {
-      const augs = Data.augmentateInstanceByFeatures(
-        instance,
-        augFeatureCombs[i],
-        featureInfo
-      );
-      ret = ret.concat(augs);
-    }
-
-    return ret;
-  },
-
-  augmentateInstanceByFeatures: (instance, augFeatures, featureInfo) => {
-    let ret = [];
-
-    // init aug instance
-    const aug = { ...instance };
-    delete aug.real;
-    delete aug.diff;
-    aug.original_id = instance.id;
-    aug.original_pred = instance.pred;
-    aug.augFeatures = new Set();
-    ret.push(aug); // original as a aug instance
-
-    // 피쳐 값 변환
-    augFeatures.forEach((augFeature) => {
-      const augs = Data.augmentateInstanceByFeature(
-        ret,
-        augFeature,
-        featureInfo
-      );
-      ret = ret.concat(augs);
-    });
-
-    return ret;
-  },
-
-  augmentateInstanceByFeature: (instances, augFeature, featureInfo) => {
-    const ret = [];
-    instances.forEach((instance) => {
-      const aug = { ...instance };
-      aug.augFeatures.add(augFeature);
-      aug[`original_${augFeature}`] = instance[augFeature];
-      aug[augFeature] = Data.getRandomItem(
-        featureInfo[augFeature].uniqueValues
-      );
-      ret.push(aug);
-    });
-    return ret;
+    return augInstances;
   },
 
   groupAugs: (augs) => {
@@ -168,7 +112,7 @@ const Data = {
         if (aug[`original_${feature}`] < aug[feature]) {
           conditionId = `${feature}+`;
           stackedConditionId += `${feature}+/`;
-        } else {
+        } else if (aug[`original_${feature}`] > aug[feature]) {
           conditionId = `${feature}-`;
           stackedConditionId += `${feature}-/`;
         }
@@ -186,7 +130,7 @@ const Data = {
       });
 
       // 2개 이상 피처가 바뀐 경우, 쌓인 좋건에 의한 그룹에 집어 넣는다.
-      if (aug.augFeatures.size >= 2) {
+      if (aug.augFeatures.length >= 2) {
         stackedConditionId = stackedConditionId.slice(0, -1);
         if (groups.hasOwnProperty(stackedConditionId)) {
           groups[stackedConditionId].instanceIds.push(aug.id);
@@ -236,15 +180,16 @@ const Data = {
     return items[Math.floor(Math.random() * items.length)];
   },
 
-  combinations: (arr, max_k) => {
-    const combs = [];
-    for (let k = 1; k <= max_k; k++) {
-      const k_combs = Data.k_combinations(arr, k);
-      for (let i = 0; i < k_combs.length; i++) {
-        combs.push(k_combs[i]);
+  pickRandKItems: (array, minK, maxK) => {
+    const randomItems = [];
+    const k = Math.floor(Math.random() * (maxK - minK + 1) + minK);
+    while (randomItems.length < k) {
+      const randomItem = array[Math.floor(Math.random() * array.length)];
+      if (randomItems.indexOf(randomItem)) {
+        randomItems.push(randomItem);
       }
     }
-    return combs;
+    return randomItems;
   },
 
   arr2obj: (arr, keyName = "id") => {
@@ -254,39 +199,12 @@ const Data = {
     });
     return ret;
   },
-
-  k_combinations: (arr, k) => {
-    const combs = [];
-
-    // There is no way to take e.g. arrs of 5 elements from a arr of 4.
-    if (k > arr.length || k <= 0) {
-      return [];
-    }
-
-    // K-sized arr has only one K-sized subarr.
-    if (k == arr.length) {
-      return [arr];
-    }
-
-    // There is N 1-sized subarrs in a N-sized arr.
-    if (k == 1) {
-      for (let i = 0; i < arr.length; i++) {
-        combs.push([arr[i]]);
-      }
-      return combs;
-    }
-
-    for (let i = 0; i < arr.length - k + 1; i++) {
-      const head = arr.slice(i, i + 1);
-      const tailcombs = Data.k_combinations(arr.slice(i + 1), k - 1);
-      for (let j = 0; j < tailcombs.length; j++) {
-        combs.push(head.concat(tailcombs[j]));
-      }
-    }
-    return combs;
-  },
 };
 
+// TODO: categorical인 경우 
+// 방법: 1) categorical인 other options 어트리뷰트 만든다.
+//      2) aug features 추가하는 부분에 other options 중 하나 이상이 포함되어있는지 검사합ㄴ다.
+//      3) 있으면 해당 피쳐를 aug features에 추가하지 않는다. 
 const CONSTANTS = {
   datatype: {
     age: "numeric",

@@ -9,7 +9,6 @@ class TableBody extends React.Component {
           return (
             <TableRow
               key={`tr-out-${key}`}
-              instances={this.props.instances}
               features={this.props.features}
               group={group}
               groupKey={key}
@@ -38,13 +37,12 @@ class TableRow extends React.Component {
           const key = `${this.props.groupKey}-${feature.name}`;
           return (
             <td key={`td-${key}`}>
-              hi
-              {/* <TableCell
-                  group={this.props.group}
-                  augsObj={this.props.augsObj}
-                  fname={feature.name}
-                  visId={key}
-                /> */}
+              <TableCell
+                group={this.props.group}
+                augsObj={this.props.augsObj}
+                fname={feature.name}
+                visId={key}
+              />
             </td>
           );
         })}
@@ -68,6 +66,7 @@ class TableCell extends React.Component {
       values: [],
       uniqueValues: new Set(),
     };
+    // TODO: auged feature인 경우 original도 보여준다.
     // const originalFeatureInfo = {
     //   name: this.props.fname,
     //   min: Infinity,
@@ -90,23 +89,16 @@ class TableCell extends React.Component {
       //   originalFeatureInfo.uniqueValues.push(val);
       // }
     });
-
     return (
       <span>
-        {isNumeric & isAuged && <TableBoxPlot />}
-        {isNumeric & !isAuged && <TableBoxPlot />}
-        {!isNumeric & isAuged && (
+        hey
+        {/* {isNumeric && <TableBoxPlot />}
+        {!isNumeric && (
           <TableHistogram
             feautreInfo={augsFeatureInfo}
             visId={this.props.visId}
           />
-        )}
-        {!isNumeric & !isAuged && (
-          <TableHistogram
-            feautreInfo={augsFeatureInfo}
-            visId={this.props.visId}
-          />
-        )}
+        )} */}
       </span>
     );
   }
