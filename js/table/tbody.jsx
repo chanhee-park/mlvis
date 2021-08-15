@@ -30,20 +30,34 @@ class TableRow extends React.Component {
         key={`tr-in-${this.props.rowIndex}`}
         onClick={() => {
           console.log("On click - a table row");
+          console.log("On click - a table row");
         }}
       >
         {Object.values(this.props.features).map((feature, colIndex) => {
+          const fname = feature.name;
           const key = `tr-${this.props.rowIndex}-tc-${colIndex}`;
           const augFeatures = this.props.group.augFeatures;
-          const isAuged = augFeatures.indexOf(feature.name) >= 0;
+          const groupKey = this.props.group.key;
+          const isAuged = augFeatures.indexOf(fname) >= 0;
+
+          let isPosAug = false;
+          if (
+            isAuged &&
+            groupKey.split(fname)[1] &&
+            groupKey.split(fname)[1][0] === "+"
+          ) {
+            isPosAug = true;
+          }
+
           return (
             <td key={key}>
               <TableCell
                 group={this.props.group}
                 augsObj={this.props.augsObj}
                 features={this.props.features}
-                fname={feature.name}
+                fname={fname}
                 isAgued={isAuged}
+                isPosAug={isPosAug}
                 visId={`vis-${key}`}
               />
             </td>
@@ -78,7 +92,7 @@ class TableCell extends React.Component {
         max: this.props.features[this.props.fname].max,
         uniqueValues: this.props.features[this.props.fname].uniqueValues,
         values: this.props.group.instanceIds.map(
-          (id) => this.props.augsObj[id][`original-${this.props.fname}`]
+          (id) => this.props.augsObj[id][`original_${this.props.fname}`]
         ),
       };
     }
@@ -91,6 +105,7 @@ class TableCell extends React.Component {
           feature={augsFeatureInfo}
           id={this.props.visId}
           comparator={ogFeatureInfo}
+          isPosAug={this.props.isPosAug}
         />
       </span>
     );

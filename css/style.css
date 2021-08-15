@@ -48,11 +48,3 @@ svg {
   display: grid;
   grid-template-rows: 1fr 160px;
 }
-
-.histogram__graph {
-  height: 70px;
-}
-
-.violin-plot {
-  height: 70px;
-}

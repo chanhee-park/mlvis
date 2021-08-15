@@ -69,7 +69,7 @@ const Data = {
     return ret;
   },
 
-  augmentateInstances: (instances, featureInfo) => {
+  augmentateInstances: (instances, featureInfo, dataname) => {
     const augInstances = [];
 
     // unpick features for augmentation
@@ -84,20 +84,31 @@ const Data = {
     instances.forEach((instance) => {
       for (let i = 0; i < 20; i++) {
         const augInstance = { ...instance };
+        delete augInstance.real;
+        delete augInstance.diff;
+        augInstance.original_id = instance.id;
+        augInstance.original_pred = instance.pred;
+
+        // pick aug features
         augInstance.augFeatures = Data.pickRandKItems(featureNames, 1, 2);
 
-        // console.log(augInstance.augFeatures);
         augInstance.augFeatures.forEach((augFeature) => {
-          // console.log(augFeature);
           augInstance[`original_${augFeature}`] = instance[augFeature];
           augInstance[augFeature] = Data.getRandomItem(
             featureInfo[augFeature].uniqueValues
           );
         });
-        // console.log(augInstance);
         augInstances.push(augInstance);
       }
     });
+
+    // pred for augs
+    const preds = Model.predict(dataname, augInstances);
+    for (let i = 0; i < augInstances.length; i++) {
+      augInstances[i].pred = preds[i];
+      augInstances[i].diff = augInstances[i].pred - augInstances[i].original_pred;
+      augInstances[i].id = `${augInstances[i].original_id}-aug-${i}`;
+    }
 
     return augInstances;
   },
@@ -120,7 +131,7 @@ const Data = {
         // 그룹에 집어 넣는다. (변경 피쳐 1개 마다 각각 그룹에 넣는다.)
         if (groups.hasOwnProperty(conditionId)) {
           groups[conditionId].instanceIds.push(aug.id);
-        } else if (conditionId !== "") {
+        } else {
           groups[conditionId] = {
             key: conditionId,
             instanceIds: [aug.id],
