@@ -12,7 +12,7 @@ window.onload = async () => {
   console.log("instance:", instances[0]);
   console.log("augmentations:", augmentations);
   console.log("augmentation:", augmentations[0]);
-  console.log("Data fully setted.");
+  console.log("Data is fully loaded.");
 
   ReactDOM.render(
     <App instances={instances} features={features} augmentations={augmentations} />,
