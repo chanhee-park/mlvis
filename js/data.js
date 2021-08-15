@@ -1,6 +1,6 @@
 const Data = {
   setInstances: async (dataname) => {
-    const instances = await Data.readCsv(`/data/${dataname}/${dataname}.csv`);
+    const instances = await Data.readCsv(dataname);
     const preds = Model.predict(dataname, instances);
     const randomSamples = [];
 
@@ -21,8 +21,8 @@ const Data = {
    * @param {string} dir file dir
    * @returns {array} array of objects
    */
-  readCsv: async (dir) => {
-    return await d3.csv(dir);
+  readCsv: async (dataname) => {
+    return await d3.csv(`/data/${dataname}/${dataname}.csv`);
   },
 
   /**
@@ -82,7 +82,7 @@ const Data = {
 
     // get aug instances
     instances.forEach((instance) => {
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 20; i++) {
         const augInstance = { ...instance };
         augInstance.augFeatures = Data.pickRandKItems(featureNames, 1, 2);
 
@@ -120,7 +120,7 @@ const Data = {
         // 그룹에 집어 넣는다. (변경 피쳐 1개 마다 각각 그룹에 넣는다.)
         if (groups.hasOwnProperty(conditionId)) {
           groups[conditionId].instanceIds.push(aug.id);
-        } else {
+        } else if (conditionId !== "") {
           groups[conditionId] = {
             key: conditionId,
             instanceIds: [aug.id],
@@ -201,10 +201,10 @@ const Data = {
   },
 };
 
-// TODO: categorical인 경우 
+// TODO: categorical인 경우
 // 방법: 1) categorical인 other options 어트리뷰트 만든다.
 //      2) aug features 추가하는 부분에 other options 중 하나 이상이 포함되어있는지 검사합ㄴ다.
-//      3) 있으면 해당 피쳐를 aug features에 추가하지 않는다. 
+//      3) 있으면 해당 피쳐를 aug features에 추가하지 않는다.
 const CONSTANTS = {
   datatype: {
     age: "numeric",
@@ -212,9 +212,9 @@ const CONSTANTS = {
     bmi: "numeric",
     children: "numeric",
     smoker: "categorical",
-    north_east: "categorical",
-    north_west: "categorical",
-    south_east: "categorical",
-    south_west: "categorical",
+    location: "categorical",
+    real: "numeric",
+    pred: "numeric",
+    diff: "numeric",
   },
 };

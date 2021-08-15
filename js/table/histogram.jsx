@@ -13,15 +13,20 @@ class HistogramGraph extends React.Component {
     // size
     const svgW = svg.style("width").replace("px", "");
     const svgH = svg.style("height").replace("px", "");
-    const paddingT = 10;
-    const paddingR = 10;
-    const paddingB = 10;
-    const paddingL = 10;
+    const paddingT = 15;
+    const paddingR = 15;
+    const paddingB = 15;
+    const paddingL = 15;
     const graphW = svgW - (paddingL + paddingR);
     const graphH = svgH - (paddingT + paddingB);
 
+    // datatype
+    const isCategorical = CONSTANTS.datatype[feature.name] === "categorical";
+
     // split size
-    const numOfSplits = Math.min(feature.uniqueValues.size, 16);
+    const numOfSplits = isCategorical
+      ? feature.uniqueValues.size
+      : Math.min(feature.uniqueValues.size, 8);
     const splitSize = (feature.max - feature.min) / (numOfSplits - 1);
     const splitsSpaces = [feature.min];
     for (let i = 1; i < numOfSplits; i++) {
@@ -49,13 +54,18 @@ class HistogramGraph extends React.Component {
     // draw a bar chart for the histogram
     counts.forEach((count, index) => {
       const rectH = scaleH(count);
+      const color = isCategorical
+        ? d3.schemePastel1[index % 10]
+        : d3.interpolateYlGnBu(0.3 + (index / (numOfSplits - 1)) * 0.2);
+
       svg
         .append("rect")
         .attr("x", scaleX(index))
         .attr("y", svgH - rectH)
-        .attr("width", graphW / (numOfSplits * 1.05))
+        .attr("width", graphW / numOfSplits - 1)
         .attr("height", rectH)
-        .attr("fill", "#CCC"); // Light Blue: CBD6E8
+        .attr("fill", color)
+        .attr("opacity", 0.6);
     });
 
     // write min and max values

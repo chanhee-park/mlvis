@@ -14,10 +14,10 @@ const Model = {
       pred += 410.97 * e.bmi;
       pred += 493.54 * e.children;
       pred += 24581.1 * e.smoker;
-      pred += 974.07 * e.north_east;
-      pred += 646.11 * e.north_west;
-      pred += -33.22 * e.south_east;
-      pred += 0 * e.south_west;
+      pred += e.location === 0 ? 974.07 : 0; // north_east
+      pred += e.location === 1 ? 646.11 : 0; // north_west
+      pred += e.location === 2 ? -33.22 : 0; // south_east
+      pred += e.location === 3 ? 0 : 0; // south_east
       ret.push(pred);
     });
     return ret;

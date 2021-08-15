@@ -52,3 +52,7 @@ svg {
 .histogram__graph {
   height: 70px;
 }
+
+.violin-plot {
+  height: 70px;
+}

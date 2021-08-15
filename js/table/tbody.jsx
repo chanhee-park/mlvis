@@ -2,16 +2,15 @@ class TableBody extends React.Component {
   render() {
     return (
       <tbody>
-        {Object.entries(this.props.augGroups).map((ent) => {
-          const key = ent[0];
+        {Object.entries(this.props.augGroups).map((ent, rowIndex) => {
           const group = ent[1];
           const augsObj = Data.arr2obj(this.props.augmentations);
           return (
             <TableRow
-              key={`tr-out-${key}`}
+              key={`tr-out-${rowIndex}`}
               features={this.props.features}
               group={group}
-              groupKey={key}
+              rowIndex={rowIndex}
               augsObj={augsObj}
               // TODO: Focused Group
               // isFocused={instance === this.props.focusedInstance}
@@ -28,20 +27,24 @@ class TableRow extends React.Component {
   render() {
     return (
       <tr
-        key={`tr-in-${this.props.groupKey}`}
+        key={`tr-in-${this.props.rowIndex}`}
         onClick={() => {
           console.log("On click - a table row");
         }}
       >
-        {Object.values(this.props.features).map((feature) => {
-          const key = `${this.props.groupKey}-${feature.name}`;
+        {Object.values(this.props.features).map((feature, colIndex) => {
+          const key = `tr-${this.props.rowIndex}-tc-${colIndex}`;
+          const augFeatures = this.props.group.augFeatures;
+          const isAuged = augFeatures.indexOf(feature.name) >= 0;
           return (
-            <td key={`td-${key}`}>
+            <td key={key}>
               <TableCell
                 group={this.props.group}
                 augsObj={this.props.augsObj}
+                features={this.props.features}
                 fname={feature.name}
-                visId={key}
+                isAgued={isAuged}
+                visId={`vis-${key}`}
               />
             </td>
           );
@@ -56,64 +59,40 @@ class TableRow extends React.Component {
 
 class TableCell extends React.Component {
   render() {
-    const isNumeric = CONSTANTS.datatype[this.props.fname] == "numeric";
-    const isAuged = false;
-
     const augsFeatureInfo = {
       name: this.props.fname,
-      min: Infinity,
-      max: -Infinity,
-      values: [],
-      uniqueValues: new Set(),
+      min: this.props.features[this.props.fname].min,
+      max: this.props.features[this.props.fname].max,
+      uniqueValues: this.props.features[this.props.fname].uniqueValues,
+      values: this.props.group.instanceIds.map(
+        (id) => this.props.augsObj[id][this.props.fname]
+      ),
     };
-    // TODO: auged feature인 경우 original도 보여준다.
-    // const originalFeatureInfo = {
-    //   name: this.props.fname,
-    //   min: Infinity,
-    //   max: -Infinity,
-    //   values: [],
-    //   uniqueValues: new Set(),
-    // };
 
-    this.props.group.instanceIds.forEach((id) => {
-      const aug = this.props.augsObj[id];
-      const val = aug[this.props.fname];
-      augsFeatureInfo.min = Math.min(augsFeatureInfo.min, val);
-      augsFeatureInfo.max = Math.max(augsFeatureInfo.max, val);
-      augsFeatureInfo.values.push(val);
-      augsFeatureInfo.uniqueValues.add(val);
-      // if (isAuged) {
-      //   originalFeatureInfo.min = Math.min(augsFeatureInfo.min, val);
-      //   originalFeatureInfo.max = Math.max(augsFeatureInfo.max, val);
-      //   originalFeatureInfo.values.push(val);
-      //   originalFeatureInfo.uniqueValues.push(val);
-      // }
-    });
+    let ogFeatureInfo = undefined;
+    if (this.props.isAgued) {
+      // isAuged === ture
+      ogFeatureInfo = {
+        name: this.props.fname,
+        min: this.props.features[this.props.fname].min,
+        max: this.props.features[this.props.fname].max,
+        uniqueValues: this.props.features[this.props.fname].uniqueValues,
+        values: this.props.group.instanceIds.map(
+          (id) => this.props.augsObj[id][`original-${this.props.fname}`]
+        ),
+      };
+    }
+
+    // TODO: auged feature인 경우 original도 보여준다.
+
     return (
       <span>
-        hey
-        {/* {isNumeric && <TableBoxPlot />}
-        {!isNumeric && (
-          <TableHistogram
-            feautreInfo={augsFeatureInfo}
-            visId={this.props.visId}
-          />
-        )} */}
+        <HistogramGraph
+          feature={augsFeatureInfo}
+          id={this.props.visId}
+          comparator={ogFeatureInfo}
+        />
       </span>
-    );
-  }
-}
-
-class TableBoxPlot extends React.Component {
-  render() {
-    return <span>BOX PLOT</span>;
-  }
-}
-
-class TableHistogram extends React.Component {
-  render() {
-    return (
-      <HistogramGraph feautre={this.props.feautreInfo} id={this.props.visId} />
     );
   }
 }
