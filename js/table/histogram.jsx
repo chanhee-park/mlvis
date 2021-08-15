@@ -7,6 +7,7 @@ class HistogramGraph extends React.Component {
   }
 
   // TODO: 화살표 그리기, 텍스트 쓰기 등 함수 분리
+  // TODO (최우선): Diff 에 x, y, w, h 중 NaN이 있어서 안그려지는 문제 해결 
   draw(feature, onlyStroke = false) {
     // set a svg
     const svg = d3.select(`#${this.props.id}`);
