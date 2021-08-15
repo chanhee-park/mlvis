@@ -11,7 +11,7 @@ class App extends React.Component {
   }
 
   setSelectedInstances(instances) {
-    const newSelectedAugs = this.setSelectedAugs(instances);
+    const newSelectedAugs = this.getSelectedAugs(instances);
     this.setState({
       selectedInstances: instances,
       selectedAugs: newSelectedAugs,
