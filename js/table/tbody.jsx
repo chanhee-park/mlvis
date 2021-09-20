@@ -3,8 +3,7 @@ class TableBody extends React.Component {
   render() {
     return (
       <tbody>
-        {Object.entries(this.props.augGroups).map((ent, rowIndex) => {
-          const group = ent[1];
+        {this.props.augGroups.map((group, rowIndex) => {
           const augsObj = Data.arr2obj(this.props.augmentations);
           return (
             <TableRow
@@ -38,7 +37,7 @@ class TableRow extends React.Component {
           const key = `tr-${this.props.rowIndex}-tc-${colIndex}`;
           const augFeatures = this.props.group.augFeatures;
           const groupKey = this.props.group.key;
-          const isAuged = augFeatures.indexOf(fname) >= 0;
+          const isAuged = augFeatures.has(fname);
 
           let isPosAug = false;
           if (
@@ -52,6 +51,7 @@ class TableRow extends React.Component {
           return (
             <td key={key}>
               <TableCell
+                key = {`cell-${key}`}
                 group={this.props.group}
                 augsObj={this.props.augsObj}
                 features={this.props.features}
@@ -72,32 +72,23 @@ class TableRow extends React.Component {
 }
 
 class TableCell extends React.Component {
-  render() {
-    const augFeatureInfo = {
-      name: this.props.fname,
-      min: this.props.features[this.props.fname].min,
-      max: this.props.features[this.props.fname].max,
-      uniqueValues: this.props.features[this.props.fname].uniqueValues,
-      values: this.props.group.instances.map(instance => instance[this.props.fname]),
-    };
-
-    let ogFeatureInfo = undefined;
-    if (this.props.isAgued) {
-      ogFeatureInfo = {
+  constructor(props) {
+    super(props);
+    this.state = { featureInfo : {
         name: this.props.fname,
         min: this.props.features[this.props.fname].min,
         max: this.props.features[this.props.fname].max,
         uniqueValues: this.props.features[this.props.fname].uniqueValues,
-        values: this.props.group.instances.map(instance => instance[`original_${this.props.fname}`]),
-      };
-    }
+      } };
+  }
 
+  render() {
     return (
       <span>
         <HistogramGraph
           id={this.props.visId}
-          feature={ogFeatureInfo ? ogFeatureInfo : augFeatureInfo}
-          comparator={ogFeatureInfo ? augFeatureInfo : undefined}
+          group={this.props.group}
+          feature={this.state.featureInfo}
           isPosAug={this.props.isPosAug}
         />
       </span>

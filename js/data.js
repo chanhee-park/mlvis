@@ -93,14 +93,14 @@ const Data = {
         augInstance.original_id = instances[i].id;
         augInstance.original_pred = instances[i].pred;
 
-        augInstance.augFeatures = [];
+        augInstance.augFeatures = new Set();
         const augFeatures = Data.pickRandKItems(featureNames, 1, 2);
         let numOfAugFeatures = 0;
         augFeatures.forEach((augFeature) => {
           if (instances[i][augFeature] !== instances[j][augFeature]) {
             augInstance[`original_${augFeature}`] = instances[i][augFeature];
             augInstance[augFeature] = instances[j][augFeature];
-            augInstance.augFeatures.push(augFeature);
+            augInstance.augFeatures.add(augFeature);
             numOfAugFeatures += 1;
           }
         });
@@ -112,12 +112,11 @@ const Data = {
 
     // pred for augs
     const preds = Model.predict(dataName, augInstances);
-    for (let i = 0; i < augInstances.length; i++) {
-      augInstances[i].pred = preds[i];
-      augInstances[i].diff =
-        augInstances[i].pred - augInstances[i].original_pred;
-      augInstances[i].id = `${augInstances[i].original_id}-aug-${i}`;
-    }
+    augInstances.forEach((aug, index)=> {
+      aug.pred = preds[index];
+      aug.diff = aug.pred - aug.original_pred;
+      aug.id = `${aug.original_id}-aug-${index}`;
+    });
 
     return augInstances;
   },
@@ -127,7 +126,7 @@ const Data = {
     augs.forEach((aug) => {
       let conditionId = "";
       // 어떤 그룹에 들어갈지 판별한다.
-      aug.augFeatures.forEach((feature) => {
+      Array.from(aug.augFeatures).sort().forEach((feature) => {
         if (aug[`original_${feature}`] < aug[feature]) {
           conditionId += `${feature}+/`;
         } else if (aug[`original_${feature}`] > aug[feature]) {
@@ -151,30 +150,39 @@ const Data = {
 
     Object.values(groups).forEach((group) => {
       group.stat = Data.getStatOfGroup(augs, group.instanceIds);
-      group.augFeatures.push("pred");
-      group.key += (group.stat.diffMean < 0) ? "pred-" : "pred+";
+      group.augFeatures.add("pred");
+      group.key += group.stat.diffMean < 0 ? "pred-" : "pred+";
     });
 
-    return groups;
+    // return only groups which have 30 or more members
+    return Object.values(groups).filter((g) => g.instanceIds.length >= 30);
   },
 
   getStatOfGroup: (totalInstances, groupInstanceIds) => {
     const totalInstancesObj = Data.arr2obj(totalInstances);
     const stat = { diffMean: 0, absDiffMean: 0 };
+    const featureNames = [];
 
     groupInstanceIds.forEach((id) => {
       const instance = totalInstancesObj[id];
       Object.keys(instance).forEach((feature) => {
-        if (feature !== "augFeatures" && feature !== "id") {
-          if (stat.hasOwnProperty(feature)) {
-            stat[feature].push(instance[feature]);
-          } else {
-            stat[feature] = [instance[feature]];
-          }
+        featureNames.push(feature);
+        const value = instance[feature] * 1;
+        if (stat.hasOwnProperty(feature)) {
+          stat[feature].values.push(value);
+          stat[feature].sum += value;
+        } else {
+          stat[feature] = { mean: 0, sum: value, values: [value] };
         }
       });
       stat.diffMean += instance.diff;
       stat.absDiffMean += Math.abs(instance.diff);
+    });
+
+    featureNames.forEach((feature) => {
+      if (stat[feature].values.length > 0) {
+        stat[feature].mean = stat[feature].sum / stat[feature].values.length;
+      }
     });
     stat.diffMean /= groupInstanceIds.length;
     stat.absDiffMean /= groupInstanceIds.length;
@@ -183,13 +191,11 @@ const Data = {
   },
 
   pickRandKItems: (array, minK, maxK) => {
-    const randomItems = [];
+    const randomItems = new Set();
     const k = Math.floor(Math.random() * (maxK - minK + 1) + minK);
-    while (randomItems.length < k) {
+    while (randomItems.size < k) {
       const randomItem = array[Math.floor(Math.random() * array.length)];
-      if (randomItems.indexOf(randomItem) < 0) {
-        randomItems.push(randomItem);
-      }
+      randomItems.add(randomItem);
     }
     return randomItems;
   },

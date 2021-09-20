@@ -8,6 +8,11 @@ class Table extends React.Component {
     console.log("groups:", this.state.augGroups);
   }
 
+  setSortedGroup(sortedGroup) {
+    this.setState({augGroups: sortedGroup});
+    console.log('groups were sorted:', sortedGroup);
+  }
+
   render() {
     return (
       <div className="block block__table">
@@ -15,7 +20,8 @@ class Table extends React.Component {
           <TableHeader
             features={this.props.features}
             instances={this.props.instances}
-            setSelectedInstances={this.props.setSelectedInstances}
+            setSortedGroup={(v) => this.setSortedGroup(v)}
+            augGroups={this.state.augGroups}
           />
           <TableBody
             features={this.props.features}

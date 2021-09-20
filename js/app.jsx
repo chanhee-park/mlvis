@@ -44,7 +44,6 @@ class App extends React.Component {
           features={this.props.features}
           augmentations={this.state.selectedAugs}
           focusedInstance={this.state.focusedInstance}
-          setSelectedInstances={(v) => this.setSelectedInstances(v)}
           setFocusedInstance={(v) => this.setFocusedInstance(v)}
         />
       </div>
