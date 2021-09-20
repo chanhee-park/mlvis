@@ -84,21 +84,23 @@ const Data = {
     instances.sort((a, b) => a.real - b.real);
 
     for (let i = 0; i < instances.length; i++) {
-      const start = Math.max(0, i - 10);
-      const end = Math.min(instances.length, i + 10);
+      const start = Math.max(0, i - 25);
+      const end = Math.min(instances.length, i + 25);
       for (let j = start; j < end; j++) {
+        if (i === j) continue;
         const augInstance = { ...instances[i] };
-            delete augInstance.diff;
-            augInstance.original_id = instances[i].id;
-            augInstance.original_pred = instances[i].pred;
+        delete augInstance.diff;
+        augInstance.original_id = instances[i].id;
+        augInstance.original_pred = instances[i].pred;
 
+        augInstance.augFeatures = [];
+        const augFeatures = Data.pickRandKItems(featureNames, 1, 2);
         let numOfAugFeatures = 0;
-        augInstance.augFeatures = Data.pickRandKItems(featureNames, 1, 3);
-
-        augInstance.augFeatures.forEach((augFeature) => {
+        augFeatures.forEach((augFeature) => {
           if (instances[i][augFeature] !== instances[j][augFeature]) {
             augInstance[`original_${augFeature}`] = instances[i][augFeature];
             augInstance[augFeature] = instances[j][augFeature];
+            augInstance.augFeatures.push(augFeature);
             numOfAugFeatures += 1;
           }
         });
@@ -123,49 +125,34 @@ const Data = {
   groupAugs: (augs) => {
     const groups = {};
     augs.forEach((aug) => {
-      let stackedConditionId = "";
+      let conditionId = "";
       // 어떤 그룹에 들어갈지 판별한다.
       aug.augFeatures.forEach((feature) => {
-        let conditionId = "";
         if (aug[`original_${feature}`] < aug[feature]) {
-          conditionId = `${feature}+`;
-          stackedConditionId += `${feature}+/`;
+          conditionId += `${feature}+/`;
         } else if (aug[`original_${feature}`] > aug[feature]) {
-          conditionId = `${feature}-`;
-          stackedConditionId += `${feature}-/`;
-        }
-
-        // 그룹에 집어 넣는다. (변경 피쳐 1개 마다 각각 그룹에 넣는다.)
-        if (groups.hasOwnProperty(conditionId)) {
-          groups[conditionId].instanceIds.push(aug.id);
-        } else {
-          groups[conditionId] = {
-            key: conditionId,
-            instanceIds: [aug.id],
-            augFeatures: [feature],
-          };
+          conditionId += `${feature}-/`;
         }
       });
 
-      // 2개 이상 피처가 바뀐 경우, 쌓인 좋건에 의한 그룹에 집어 넣는다.
-      if (aug.augFeatures.length >= 2) {
-        stackedConditionId = stackedConditionId.slice(0, -1);
-        if (groups.hasOwnProperty(stackedConditionId)) {
-          groups[stackedConditionId].instanceIds.push(aug.id);
-        } else {
-          groups[stackedConditionId] = {
-            key: stackedConditionId,
-            instanceIds: [aug.id],
-            augFeatures: aug.augFeatures,
-          };
-        }
+      // 쌓인 좋건에 의한 그룹에 집어 넣는다.
+      if (groups.hasOwnProperty(conditionId)) {
+        groups[conditionId].instanceIds.push(aug.id);
+        groups[conditionId].instances.push(aug);
+      } else {
+        groups[conditionId] = {
+          key: conditionId,
+          instanceIds: [aug.id],
+          instances: [aug],
+          augFeatures: aug.augFeatures,
+        };
       }
     });
 
     Object.values(groups).forEach((group) => {
       group.stat = Data.getStatOfGroup(augs, group.instanceIds);
       group.augFeatures.push("pred");
-      group.key += +(group.stat.diffMean > 0) ? "pred-" : "pred+";
+      group.key += (group.stat.diffMean < 0) ? "pred-" : "pred+";
     });
 
     return groups;
@@ -178,7 +165,7 @@ const Data = {
     groupInstanceIds.forEach((id) => {
       const instance = totalInstancesObj[id];
       Object.keys(instance).forEach((feature) => {
-        if (feature != "augFeatures" && feature != "id") {
+        if (feature !== "augFeatures" && feature !== "id") {
           if (stat.hasOwnProperty(feature)) {
             stat[feature].push(instance[feature]);
           } else {
@@ -195,17 +182,12 @@ const Data = {
     return stat;
   },
 
-  getRandomItem: (set) => {
-    let items = Array.from(set);
-    return items[Math.floor(Math.random() * items.length)];
-  },
-
   pickRandKItems: (array, minK, maxK) => {
     const randomItems = [];
     const k = Math.floor(Math.random() * (maxK - minK + 1) + minK);
     while (randomItems.length < k) {
       const randomItem = array[Math.floor(Math.random() * array.length)];
-      if (randomItems.indexOf(randomItem)) {
+      if (randomItems.indexOf(randomItem) < 0) {
         randomItems.push(randomItem);
       }
     }

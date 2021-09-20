@@ -31,7 +31,6 @@ class TableRow extends React.Component {
         key={`tr-in-${this.props.rowIndex}`}
         onClick={() => {
           console.log("On click - a table row");
-          console.log("On click - a table row");
         }}
       >
         {Object.values(this.props.features).map((feature, colIndex) => {
@@ -74,38 +73,31 @@ class TableRow extends React.Component {
 
 class TableCell extends React.Component {
   render() {
-    const augsFeatureInfo = {
+    const augFeatureInfo = {
       name: this.props.fname,
       min: this.props.features[this.props.fname].min,
       max: this.props.features[this.props.fname].max,
       uniqueValues: this.props.features[this.props.fname].uniqueValues,
-      values: this.props.group.instanceIds.map(
-        (id) => this.props.augsObj[id][this.props.fname]
-      ),
+      values: this.props.group.instances.map(instance => instance[this.props.fname]),
     };
 
     let ogFeatureInfo = undefined;
     if (this.props.isAgued) {
-      // isAuged === ture
       ogFeatureInfo = {
         name: this.props.fname,
         min: this.props.features[this.props.fname].min,
         max: this.props.features[this.props.fname].max,
         uniqueValues: this.props.features[this.props.fname].uniqueValues,
-        values: this.props.group.instanceIds.map(
-          (id) => this.props.augsObj[id][`original_${this.props.fname}`]
-        ),
+        values: this.props.group.instances.map(instance => instance[`original_${this.props.fname}`]),
       };
     }
-
-    // TODO: auged feature인 경우 original도 보여준다.
 
     return (
       <span>
         <HistogramGraph
           id={this.props.visId}
-          feature={ogFeatureInfo ? ogFeatureInfo : augsFeatureInfo}
-          comparator={ogFeatureInfo ? augsFeatureInfo : undefined}
+          feature={ogFeatureInfo ? ogFeatureInfo : augFeatureInfo}
+          comparator={ogFeatureInfo ? augFeatureInfo : undefined}
           isPosAug={this.props.isPosAug}
         />
       </span>

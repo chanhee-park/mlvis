@@ -2,7 +2,7 @@ class HistogramGraph extends React.Component {
   componentDidMount() {
     this.draw(this.props.feature, this.props.comparator, false);
     if (this.props.comparator) {
-      this.draw(this.props.comparator, this.props.feature,true);
+      this.draw(this.props.comparator, this.props.feature, true);
     }
   }
 
@@ -24,11 +24,14 @@ class HistogramGraph extends React.Component {
     const isCategorical = CONSTANTS.datatype[feature.name] === "categorical";
 
     // split size
+    const minValue = Math.min(feature.min, other ? other.min : +Infinity);
+    const maxValue = Math.max(feature.max, other ? other.max : -Infinity);
+
     const numOfSplits = isCategorical
       ? feature.uniqueValues.size
       : Math.min(feature.uniqueValues.size, 9);
-    const splitSize = (feature.max - feature.min) / (numOfSplits - 1);
-    const splitsSpaces = [feature.min];
+    const splitSize = (maxValue - minValue) / (numOfSplits - 1);
+    const splitsSpaces = [minValue];
     for (let i = 1; i < numOfSplits; i++) {
       splitsSpaces.push(splitsSpaces[i - 1] + splitSize);
     }
@@ -36,25 +39,21 @@ class HistogramGraph extends React.Component {
     // count values by split
     const counts = new Array(numOfSplits).fill(0);
     feature.values.forEach((value) => {
-      const splitIndex = Math.floor((value - feature.min) / splitSize);
-      counts[splitIndex] += 1;
+      const splitIndex = Math.floor((value - minValue) / splitSize);
+      if(!isNaN(splitIndex)){
+        counts[splitIndex] += 1;
+      }
     });
 
-    // const otherCounts = new Array(numOfSplits).fill(0);
-    // if(other && other.values) {
-    //   other.values.forEach((value) => {
-    //     const splitIndex = Math.floor((value - other.min) / splitSize);
-    //     otherCounts[splitIndex] += 1;
-    //   });
-    // }
-    //
-    // const maxCount = Math.max(Math.max(...counts), Math.max(...otherCounts))
-    //
-    // if(onlyStroke && isCategorical) {
-    //   console.log(counts);
-    //   console.log(otherCounts);
-    //   console.log(maxCount);
-    // }
+    const otherCounts = new Array(numOfSplits).fill(0);
+    feature.values.forEach((value) => {
+      const splitIndex = Math.floor((value - minValue) / splitSize);
+      if(!isNaN(splitIndex)){
+        otherCounts[splitIndex] += 1;
+      }
+    });
+
+    const maxCounts = Math.max(Math.max(...counts), Math.max(...otherCounts))
 
     // set scale functions
     const scaleX = d3
@@ -64,7 +63,7 @@ class HistogramGraph extends React.Component {
 
     const scaleH = d3
       .scaleLinear()
-      .domain([0, Math.max(...counts)])
+      .domain([0, maxCounts+1])
       .range([0, graphH]);
 
     // draw a bar chart for the histogram
