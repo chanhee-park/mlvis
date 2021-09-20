@@ -1,13 +1,12 @@
 class HistogramGraph extends React.Component {
   componentDidMount() {
-    this.draw(this.props.feature);
-    if (this.props.comparator !== undefined) {
+    this.draw(this.props.feature, false);
+    if (this.props.comparator) {
       this.draw(this.props.comparator, true);
     }
   }
 
   // TODO: 화살표 그리기, 텍스트 쓰기 등 함수 분리
-  // TODO: 변화량에 따라 화살표 크기 달리하기
   draw(feature, onlyStroke = false) {
     // set a svg
     const svg = d3.select(`#${this.props.id}`);
@@ -107,53 +106,17 @@ class HistogramGraph extends React.Component {
         .attr("font-weight", 400);
     } else {
       // When it is comparator, write direction of feature change
-      // TODO: 화살표 모양 다듬기
-      /*
-      const arrowStrokeWdith = 10;
+      const pointRadius = 10;
+      const cx = this.props.isPosAug
+        ? svgW - paddingL - pointRadius
+        : paddingR + pointRadius;
+      const color = this.props.isPosAug ? "#CADCEC" : "#FCCBC7";
       svg
-        .append("line")
-        .attr("x1", 30)
-        .attr("x2", svgW - 30)
-        .attr("y1", paddingT / 2)
-        .attr("y2", paddingT / 2)
-        .attr("stroke", this.props.isPosAug ? "#CADCEC" : "#FCCBC7")
-        .attr("stroke-width", arrowStrokeWdith);
-      if (this.props.isPosAug) {
-        svg
-          .append("line")
-          .attr("x1", svgW - 30)
-          .attr("x2", svgW - 50)
-          .attr("y1", paddingT / 2 - 3)
-          .attr("y2", paddingT / 2 + 10)
-          .attr("stroke", "#CADCEC")
-          .attr("stroke-width", arrowStrokeWdith);
-        svg
-          .append("line")
-          .attr("x1", svgW - 30)
-          .attr("x2", svgW - 50)
-          .attr("y1", paddingT / 2 + 3)
-          .attr("y2", paddingT / 2 - 10)
-          .attr("stroke", "#CADCEC")
-          .attr("stroke-width", arrowStrokeWdith);
-      } else {
-        svg
-        .append("line")
-        .attr("x1", 30)
-        .attr("x2", 50)
-        .attr("y1", paddingT / 2 - 3)
-        .attr("y2", paddingT / 2 + 10)
-        .attr("stroke", "#FCCBC7")
-        .attr("stroke-width", arrowStrokeWdith);
-      svg
-        .append("line")
-        .attr("x1", 30)
-        .attr("x2", 50)
-        .attr("y1", paddingT / 2 + 3)
-        .attr("y2", paddingT / 2 - 10)
-        .attr("stroke", "#FCCBC7")
-        .attr("stroke-width", arrowStrokeWdith);
-      }
-      */
+        .append("circle")
+        .attr("cx", cx)
+        .attr("cy", paddingT / 2)
+        .attr("r", pointRadius)
+        .attr("fill", color);
     }
   }
 
