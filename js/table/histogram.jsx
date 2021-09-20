@@ -7,7 +7,7 @@ class HistogramGraph extends React.Component {
   }
 
   // TODO: 화살표 그리기, 텍스트 쓰기 등 함수 분리
-  // TODO (최우선): Diff 에 x, y, w, h 중 NaN이 있어서 안그려지는 문제 해결 
+  // TODO: 변화량에 따라 화살표 크기 달리하기
   draw(feature, onlyStroke = false) {
     // set a svg
     const svg = d3.select(`#${this.props.id}`);
@@ -28,7 +28,7 @@ class HistogramGraph extends React.Component {
     // split size
     const numOfSplits = isCategorical
       ? feature.uniqueValues.size
-      : Math.min(feature.uniqueValues.size, 8);
+      : Math.min(feature.uniqueValues.size, 9);
     const splitSize = (feature.max - feature.min) / (numOfSplits - 1);
     const splitsSpaces = [feature.min];
     for (let i = 1; i < numOfSplits; i++) {
@@ -108,6 +108,7 @@ class HistogramGraph extends React.Component {
     } else {
       // When it is comparator, write direction of feature change
       // TODO: 화살표 모양 다듬기
+      /*
       const arrowStrokeWdith = 10;
       svg
         .append("line")
@@ -151,8 +152,8 @@ class HistogramGraph extends React.Component {
         .attr("y2", paddingT / 2 - 10)
         .attr("stroke", "#FCCBC7")
         .attr("stroke-width", arrowStrokeWdith);
-       
       }
+      */
     }
   }
 

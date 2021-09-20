@@ -84,7 +84,6 @@ const Data = {
     instances.forEach((instance) => {
       for (let i = 0; i < 20; i++) {
         const augInstance = { ...instance };
-        delete augInstance.real;
         delete augInstance.diff;
         augInstance.original_id = instance.id;
         augInstance.original_pred = instance.pred;
@@ -106,7 +105,8 @@ const Data = {
     const preds = Model.predict(dataname, augInstances);
     for (let i = 0; i < augInstances.length; i++) {
       augInstances[i].pred = preds[i];
-      augInstances[i].diff = augInstances[i].pred - augInstances[i].original_pred;
+      augInstances[i].diff =
+        augInstances[i].pred - augInstances[i].original_pred;
       augInstances[i].id = `${augInstances[i].original_id}-aug-${i}`;
     }
 
@@ -157,6 +157,8 @@ const Data = {
 
     Object.values(groups).forEach((group) => {
       group.stat = Data.getStatOfGroup(augs, group.instanceIds);
+      group.augFeatures.push("pred");
+      group.key += + (group.stat.diffMean > 0) ? "pred-" : "pred+";
     });
 
     return groups;

@@ -1,3 +1,4 @@
+//TODO: 인스턴스가 아니라 그룹이 정렬되도록 테이블 헤더 클릭 인터랙션 수정
 class TableBody extends React.Component {
   render() {
     return (
@@ -102,9 +103,9 @@ class TableCell extends React.Component {
     return (
       <span>
         <HistogramGraph
-          feature={augsFeatureInfo}
           id={this.props.visId}
-          comparator={ogFeatureInfo}
+          feature={ogFeatureInfo ? ogFeatureInfo : augsFeatureInfo}
+          comparator={ogFeatureInfo ? augsFeatureInfo : undefined}
           isPosAug={this.props.isPosAug}
         />
       </span>
