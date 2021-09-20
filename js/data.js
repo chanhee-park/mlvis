@@ -1,7 +1,7 @@
 const Data = {
-  setInstances: async (dataname) => {
-    const instances = await Data.readCsv(dataname);
-    const preds = Model.predict(dataname, instances);
+  setInstances: async (dataName) => {
+    const instances = await Data.readCsv(dataName);
+    const preds = Model.predict(dataName, instances);
     const randomSamples = [];
 
     for (let i = 0; i < instances.length; i++) {
@@ -21,8 +21,8 @@ const Data = {
    * @param {string} dir file dir
    * @returns {array} array of objects
    */
-  readCsv: async (dataname) => {
-    return await d3.csv(`/data/${dataname}/${dataname}.csv`);
+  readCsv: async (dataName) => {
+    return await d3.csv(`/data/${dataName}/${dataName}.csv`);
   },
 
   /**
@@ -38,8 +38,8 @@ const Data = {
       (f) =>
         (ret[f] = {
           name: f,
-          min: +Infinity,
-          max: -Infinity,
+          min: instances[0][f],
+          max: instances[0][f],
           values: [],
           uniqueValues: new Set(),
         })
@@ -69,7 +69,7 @@ const Data = {
     return ret;
   },
 
-  augmentateInstances: (instances, featureInfo, dataname) => {
+  augmentateInstances: (instances, featureInfo, dataName) => {
     const augInstances = [];
 
     // unpick features for augmentation
@@ -80,29 +80,36 @@ const Data = {
     featureNames.pop("real");
     featureNames.pop("diff");
 
-    // get aug instances
-    instances.forEach((instance) => {
-      for (let i = 0; i < 20; i++) {
-        const augInstance = { ...instance };
-        delete augInstance.diff;
-        augInstance.original_id = instance.id;
-        augInstance.original_pred = instance.pred;
+    // sort instances
+    instances.sort((a, b) => a.real - b.real);
 
-        // pick aug features
-        augInstance.augFeatures = Data.pickRandKItems(featureNames, 1, 2);
+    for (let i = 0; i < instances.length; i++) {
+      const start = Math.max(0, i - 10);
+      const end = Math.min(instances.length, i + 10);
+      for (let j = start; j < end; j++) {
+        const augInstance = { ...instances[i] };
+            delete augInstance.diff;
+            augInstance.original_id = instances[i].id;
+            augInstance.original_pred = instances[i].pred;
+
+        let numOfAugFeatures = 0;
+        augInstance.augFeatures = Data.pickRandKItems(featureNames, 1, 3);
 
         augInstance.augFeatures.forEach((augFeature) => {
-          augInstance[`original_${augFeature}`] = instance[augFeature];
-          augInstance[augFeature] = Data.getRandomItem(
-            featureInfo[augFeature].uniqueValues
-          );
+          if (instances[i][augFeature] !== instances[j][augFeature]) {
+            augInstance[`original_${augFeature}`] = instances[i][augFeature];
+            augInstance[augFeature] = instances[j][augFeature];
+            numOfAugFeatures += 1;
+          }
         });
-        augInstances.push(augInstance);
+        if (numOfAugFeatures > 0) {
+          augInstances.push(augInstance);
+        }
       }
-    });
+    }
 
     // pred for augs
-    const preds = Model.predict(dataname, augInstances);
+    const preds = Model.predict(dataName, augInstances);
     for (let i = 0; i < augInstances.length; i++) {
       augInstances[i].pred = preds[i];
       augInstances[i].diff =
@@ -158,7 +165,7 @@ const Data = {
     Object.values(groups).forEach((group) => {
       group.stat = Data.getStatOfGroup(augs, group.instanceIds);
       group.augFeatures.push("pred");
-      group.key += + (group.stat.diffMean > 0) ? "pred-" : "pred+";
+      group.key += +(group.stat.diffMean > 0) ? "pred-" : "pred+";
     });
 
     return groups;

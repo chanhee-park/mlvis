@@ -1,4 +1,4 @@
-window.onload = async () => {
+setTimeout(async () => {
   console.log("Onload");
   console.log("Data setting ...");
 
@@ -20,4 +20,4 @@ window.onload = async () => {
     />,
     document.getElementById("root")
   );
-};
+}, 500)

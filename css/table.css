@@ -9,8 +9,8 @@ table {
 }
 
 thead {
-  height: 85px;
   overflow: auto;
+  border-bottom: 1px solid #ccc;
 }
 
 th {
@@ -36,6 +36,10 @@ tr {
   border-bottom: 1px solid #ccc;
 }
 
+th, td {
+  border-right: 1px solid #eee
+}
+
 td svg {
   height: 24px;
 }
@@ -46,7 +50,7 @@ td.focused {
 }
 
 td.focused .focused-card {
-  width: calc(100%-20px);
+  width: calc(100% - 20px);
   height: 300px;
   overflow-y: scroll;
   margin: 20px 20px 40px 20px;

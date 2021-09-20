@@ -1,13 +1,12 @@
 class HistogramGraph extends React.Component {
   componentDidMount() {
-    this.draw(this.props.feature, false);
+    this.draw(this.props.feature, this.props.comparator, false);
     if (this.props.comparator) {
-      this.draw(this.props.comparator, true);
+      this.draw(this.props.comparator, this.props.feature,true);
     }
   }
 
-  // TODO: 화살표 그리기, 텍스트 쓰기 등 함수 분리
-  draw(feature, onlyStroke = false) {
+  draw(feature, other, onlyStroke) {
     // set a svg
     const svg = d3.select(`#${this.props.id}`);
 
@@ -40,6 +39,22 @@ class HistogramGraph extends React.Component {
       const splitIndex = Math.floor((value - feature.min) / splitSize);
       counts[splitIndex] += 1;
     });
+
+    // const otherCounts = new Array(numOfSplits).fill(0);
+    // if(other && other.values) {
+    //   other.values.forEach((value) => {
+    //     const splitIndex = Math.floor((value - other.min) / splitSize);
+    //     otherCounts[splitIndex] += 1;
+    //   });
+    // }
+    //
+    // const maxCount = Math.max(Math.max(...counts), Math.max(...otherCounts))
+    //
+    // if(onlyStroke && isCategorical) {
+    //   console.log(counts);
+    //   console.log(otherCounts);
+    //   console.log(maxCount);
+    // }
 
     // set scale functions
     const scaleX = d3
@@ -110,13 +125,25 @@ class HistogramGraph extends React.Component {
       const cx = this.props.isPosAug
         ? svgW - paddingL - pointRadius
         : paddingR + pointRadius;
+      const cy = paddingT / 2;
       const color = this.props.isPosAug ? "#CADCEC" : "#FCCBC7";
       svg
         .append("circle")
         .attr("cx", cx)
-        .attr("cy", paddingT / 2)
+        .attr("cy", cy)
         .attr("r", pointRadius)
         .attr("fill", color);
+
+      const imageSize = 10;
+      const imageX = cx - imageSize / 2;
+      const direction = this.props.isPosAug ? "right" : "left";
+      svg
+        .append("svg:image")
+        .attr("xlink:href", `/images/${direction}-arrow.png`)
+        .attr("x", imageX)
+        .attr("y", cy - imageSize / 2)
+        .attr("width", imageSize)
+        .attr("height", imageSize);
     }
   }
 
