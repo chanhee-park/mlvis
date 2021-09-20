@@ -3,7 +3,6 @@ class PCP extends React.Component {
     super(props);
     this.state = {
       firstDraw: true,
-      augFeatures: new Set([]),
     };
   }
 
@@ -160,32 +159,14 @@ class PCP extends React.Component {
     this.state.svg.selectAll(".column_name").remove();
 
     this.state.featureNames.forEach((feature, f_index) => {
-      // check box for augmentation option
-      let checkBox = this.state.augFeatures.has(feature) ? "■" : "□";
-      if (feature == "real" || feature == "pred" || feature == "diff") {
-        checkBox = "";
-      }
-
       this.state.svg
         .append("text")
-        .text(`${feature} ${checkBox}`)
+        .text(feature)
         .attr("x", this.state.scaleX(f_index))
         .attr("y", 15)
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "hanging")
-        .attr("class", "column_name cursor-pointer")
-        .on("click", () => {
-          if (feature == "real" || feature == "pred" || feature == "diff") {
-            return;
-          }
-          let newAugFeatures = this.state.augFeatures;
-          if (newAugFeatures.has(feature)) {
-            newAugFeatures.delete(feature);
-          } else {
-            newAugFeatures.add(feature);
-          }
-          this.setState({ augFeatures: newAugFeatures });
-        });
+        .attr("class", "column_name");
     });
   }
 

@@ -10,7 +10,6 @@ class Table extends React.Component {
 
   setSortedGroup(sortedGroup) {
     this.setState({augGroups: sortedGroup});
-    console.log('groups were sorted:', sortedGroup);
   }
 
   render() {
