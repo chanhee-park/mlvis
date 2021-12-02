@@ -8,6 +8,14 @@ table {
   border-collapse: collapse;
 }
 
+#table__tooltip {
+  visibility: hidden;
+  position: absolute;
+  background-color: #ffe;
+  padding: 5px 10px;
+  border-radius: 3px;
+}
+
 thead {
   overflow: auto;
   position: sticky;
@@ -33,12 +41,14 @@ th {
 }
 
 tr {
-  /* display: block; 있으면 헤더 고정 안됨 */
-  /* display: block; 없으면 행 여는거 안됨 */
-  /* display: block; */
   min-height: 50px;
   padding: 0;
   border-bottom: 1px solid #ccc;
+  cursor: pointer;
+}
+
+tr:hover {
+  background-color: #eee;
 }
 
 th, td {

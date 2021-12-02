@@ -11,6 +11,7 @@ class TableBody extends React.Component {
               group={group}
               rowIndex={rowIndex}
               augsObj={augsObj}
+              setHoveredGroup={this.props.setHoveredGroup}
             />
           );
         })}
@@ -25,7 +26,19 @@ class TableRow extends React.Component {
       <tr
         key={`tr-in-${this.props.rowIndex}`}
         onClick={() => {
-          console.log("On click - a table row");
+          document.getElementById("detail-view").style.visibility = "visible";
+        }}
+        onMouseOver={(e)=> {
+          this.props.setHoveredGroup(this.props.group)
+          const tooltipSpan = document.getElementById("table__tooltip")
+          const x = e.clientX;
+          const y = e.clientY;
+          tooltipSpan.style.visibility = "visible";
+          tooltipSpan.style.top = (y + 30) + 'px';
+          tooltipSpan.style.left = (x + 30) + 'px';
+        }}
+        onMouseLeave={()=>{
+          document.getElementById("table__tooltip").style.visibility = "hidden";
         }}
       >
         {Object.values(this.props.features).map((feature, colIndex) => {
@@ -85,6 +98,15 @@ class TableCell extends React.Component {
           isPosAug={this.props.isPosAug}
         />
       </span>
+    );
+  }
+}
+
+class TableTooltip extends React.Component {
+  render() {
+    const changed = this.props.hoveredGroup ? this.props.hoveredGroup.key : "None"
+    return (
+      <span className="table__tooltip" id="table__tooltip">Group Info: {changed}</span>
     );
   }
 }

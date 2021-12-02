@@ -142,11 +142,11 @@ class Histogram extends React.Component {
         .attr("y", svgH)
         .attr("text-anchor", "end")
         .attr("alignment-baseline", "baseline")
-        .attr("font-size", 12)
+        .attr("font-size", 15)
         .attr("font-weight", 400);
     } else {
       // When it is comparator, write direction of feature change
-      const pointRadius = 10;
+      const pointRadius = 13;
       const cx = this.props.isPosAug
         ? svgW - paddingL - pointRadius
         : paddingR + pointRadius;

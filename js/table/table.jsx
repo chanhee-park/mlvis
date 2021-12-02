@@ -18,6 +18,7 @@ class Table extends React.Component {
             features={this.props.features}
             augmentations={this.props.augmentations}
             augGroups={this.props.augGroups}
+            setHoveredGroup={this.props.setHoveredGroup}
           />
         </table>
       </div>
