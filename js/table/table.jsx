@@ -1,9 +1,5 @@
 // Table Exploring Generated Instances
 class Table extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     return (
       <div className="block block__table">
@@ -11,7 +7,7 @@ class Table extends React.Component {
           <TableHeader
             features={this.props.features}
             instances={this.props.instances}
-            setAugGroups={(v) => this.props.setAugGroups(v)}
+            setAugGroups={this.props.setAugGroups}
             augGroups={this.props.augGroups}
           />
           <TableBody
@@ -19,9 +15,19 @@ class Table extends React.Component {
             augmentations={this.props.augmentations}
             augGroups={this.props.augGroups}
             setHoveredGroup={this.props.setHoveredGroup}
+            setSelectedGroup={this.props.setSelectedGroup}
           />
         </table>
       </div>
+    );
+  }
+}
+
+class TableTooltip extends React.Component {
+  render() {
+    const changed = this.props.group ? this.props.group.key : "None"
+    return (
+      <span className="table__tooltip" id="table__tooltip">Group Info: {changed}</span>
     );
   }
 }

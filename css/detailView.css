@@ -15,13 +15,24 @@
 }
 
 .detail-view__header {
-  height: 50px;
+  height: 110px;
+  line-height: 50px;
+}
+
+.detail-view__header .detail-view__title {
   font-size: 32px;
   line-height: 50px;
 }
 
+.detail-view__header .detail-view__description {
+  font-size: 18px;
+  line-height: 30px;
+}
+
 .detail-view__content {
- flex: 1;
+  flex: 1;
+  max-height: 80%;
+  padding: 20px 0;
 }
 
 .detail-view__footer {
@@ -53,3 +64,20 @@
   background-color: #FCC;
 }
 
+/*detail view table*/
+.detail-view__table {
+  height: 100%;
+}
+
+.detail-view__table-body {
+  height: 100%;
+  overflow: scroll;
+}
+
+.detail-view__table-body tr {
+  height: 50px;
+}
+
+.detail-view__table .small_text {
+  font-size: 12px;
+}

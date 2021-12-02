@@ -14,6 +14,7 @@ table {
   background-color: #ffe;
   padding: 5px 10px;
   border-radius: 3px;
+  font-size: 18px;
 }
 
 thead {
@@ -35,7 +36,7 @@ th {
   cursor: pointer;
 }
 
-.table-header__feature-name .material-icons {
+.table-header__feature-name .icons {
   height: 12px;
   line-height: 12px;
 }
@@ -55,8 +56,14 @@ th, td {
   border-right: 1px solid #eee
 }
 
+td {
+  height: 30px;
+  line-height: 30px;
+  font-size: 16px;
+}
+
 td svg {
-  height: 24px;
+  height: 30px;
 }
 
 td.focused {

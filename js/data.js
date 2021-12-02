@@ -18,7 +18,6 @@ const Data = {
 
   /**
    * Get Instances form csv file
-   * @param {string} dir file dir
    * @returns {array} array of objects
    */
   readCsv: async (dataName) => {
@@ -69,7 +68,7 @@ const Data = {
     return ret;
   },
 
-  augmentateInstances: (instances, featureInfo, dataName) => {
+  augmenteInstances: (instances, featureInfo, dataName) => {
     const augInstances = [];
 
     // unpick features for augmentation
@@ -225,4 +224,8 @@ const CONSTANTS = {
     pred: "numeric",
     diff: "numeric",
   },
+};
+
+Array.prototype.insert = function ( index, item ) {
+  this.splice( index, 0, item );
 };

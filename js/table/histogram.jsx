@@ -159,16 +159,15 @@ class Histogram extends React.Component {
         .attr("r", pointRadius)
         .attr("fill", color);
 
-      const imageSize = 10;
-      const imageX = cx - imageSize / 2;
-      const direction = this.props.isPosAug ? "right" : "left";
-      svg
-        .append("svg:image")
-        .attr("xlink:href", `/images/${direction}-arrow.png`)
-        .attr("x", imageX)
-        .attr("y", cy - imageSize / 2)
-        .attr("width", imageSize)
-        .attr("height", imageSize);
+      const iconSize = 20;
+      svg.append("text")
+        .text(this.props.isPosAug ? ">" : "<")
+        .attr("x", cx)
+        .attr("y", cy)
+        .attr("size", iconSize)
+        .attr("font-weight", 900)
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "central");
     }
   }
 

@@ -9,6 +9,7 @@ class App extends React.Component {
       focusedInstance: undefined, // this.props.instances[3]
       augGroups: Data.groupAugs(this.props.augmentations),
       hoveredGroup: undefined,
+      selectedGroup: Data.groupAugs(this.props.augmentations)[0],
     };
   }
 
@@ -37,6 +38,10 @@ class App extends React.Component {
     this.setState({ hoveredGroup: group})
   }
 
+  setSelectedGroup(group) {
+    this.setState({ selectedGroup: group})
+  }
+
   render() {
     return (
       <div className="app" id="app">
@@ -51,11 +56,12 @@ class App extends React.Component {
           features={this.props.features}
           augmentations={this.state.selectedAugs}
           augGroups={this.state.augGroups}
-          setAugGroups={(v) => this.props.setAugGroups(v)}
+          setAugGroups={(v) => this.setAugGroups(v)}
           setHoveredGroup={(g) => this.setHoveredGroup(g)}
+          setSelectedGroup={(g) => this.setSelectedGroup(g)}
         />
-        <TableTooltip hoveredGroup={this.state.hoveredGroup} />
-        <DetailView />
+        <TableTooltip group={this.state.hoveredGroup} />
+        <DetailView group={this.state.selectedGroup}/>
       </div>
     );
   }

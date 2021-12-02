@@ -12,6 +12,7 @@ class TableBody extends React.Component {
               rowIndex={rowIndex}
               augsObj={augsObj}
               setHoveredGroup={this.props.setHoveredGroup}
+              setSelectedGroup={this.props.setSelectedGroup}
             />
           );
         })}
@@ -26,6 +27,7 @@ class TableRow extends React.Component {
       <tr
         key={`tr-in-${this.props.rowIndex}`}
         onClick={() => {
+          this.props.setSelectedGroup(this.props.group)
           document.getElementById("detail-view").style.visibility = "visible";
         }}
         onMouseOver={(e)=> {
@@ -102,11 +104,3 @@ class TableCell extends React.Component {
   }
 }
 
-class TableTooltip extends React.Component {
-  render() {
-    const changed = this.props.hoveredGroup ? this.props.hoveredGroup.key : "None"
-    return (
-      <span className="table__tooltip" id="table__tooltip">Group Info: {changed}</span>
-    );
-  }
-}
