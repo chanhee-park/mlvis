@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="JavaScriptLibraryMappings">
-    <file url="PROJECT" libraries="{babel-standalone, d3-color.v2, d3-interpolate.v2, d3-scale-chromatic.v2, react, react-dom}" />
-  </component>
-</project>
