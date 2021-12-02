@@ -1,4 +1,3 @@
-//TODO: 인스턴스가 아니라 그룹이 정렬되도록 테이블 헤더 클릭 인터랙션 수정
 class TableBody extends React.Component {
   render() {
     return (
@@ -12,9 +11,6 @@ class TableBody extends React.Component {
               group={group}
               rowIndex={rowIndex}
               augsObj={augsObj}
-              // TODO: Focused Group
-              // isFocused={instance === this.props.focusedInstance}
-              // setFocusedInstance={this.props.setFocusedInstance}
             />
           );
         })}
@@ -63,9 +59,6 @@ class TableRow extends React.Component {
             </td>
           );
         })}
-        {/* {this.props.isFocused && (
-          <TableFocusedCell instance={this.props.instance} />
-        )} */}
       </tr>
     );
   }
@@ -85,55 +78,13 @@ class TableCell extends React.Component {
   render() {
     return (
       <span>
-        <HistogramGraph
+        <Histogram
           id={this.props.visId}
           group={this.props.group}
           feature={this.state.featureInfo}
           isPosAug={this.props.isPosAug}
         />
       </span>
-    );
-  }
-}
-
-class TableBarChart extends React.Component {
-  render() {
-    return (
-      <svg>
-        <rect
-          x="0"
-          y="0"
-          width={`${this.props.portion * 100}%`}
-          height="100%"
-          fill={this.props.isFocused ? "#F95" : "#CCC"}
-        />
-        <text
-          x="95%"
-          y="50%"
-          fill="#777"
-          textAnchor="end"
-          alignmentBaseline="central"
-        >
-          {Math.round(this.props.value)}
-        </text>
-      </svg>
-    );
-  }
-}
-
-class TableFocusedCell extends React.Component {
-  // this.props.instance
-  // this.props.augmentatedInstances
-  render() {
-    return (
-      <td className="focused">
-        <div className="focused-card">
-          <div className="wellcome-message">{`
-              These are augmentated instances of the focused instance.
-            `}</div>
-          <div></div>
-        </div>
-      </td>
     );
   }
 }

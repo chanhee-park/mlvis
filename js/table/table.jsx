@@ -1,15 +1,7 @@
-// Table Exploring Agumentated Instances
+// Table Exploring Generated Instances
 class Table extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      augGroups: Data.groupAugs(this.props.augmentations),
-    };
-    console.log("groups:", this.state.augGroups);
-  }
-
-  setSortedGroup(sortedGroup) {
-    this.setState({augGroups: sortedGroup});
   }
 
   render() {
@@ -19,15 +11,13 @@ class Table extends React.Component {
           <TableHeader
             features={this.props.features}
             instances={this.props.instances}
-            setSortedGroup={(v) => this.setSortedGroup(v)}
-            augGroups={this.state.augGroups}
+            setAugGroups={(v) => this.props.setAugGroups(v)}
+            augGroups={this.props.augGroups}
           />
           <TableBody
             features={this.props.features}
-            augGroups={this.state.augGroups}
             augmentations={this.props.augmentations}
-            focusedInstance={this.props.focusedInstance}
-            setFocusedInstance={this.props.setFocusedInstance}
+            augGroups={this.props.augGroups}
           />
         </table>
       </div>

@@ -3,7 +3,6 @@ function IAP({
   instances,
   features,
   selectedInstances,
-  focusedInstance,
   setSelectedInstances,
 }) {
   return (
@@ -12,14 +11,12 @@ function IAP({
         instances={instances}
         features={features}
         selectedInstances={selectedInstances}
-        focusedInstance={focusedInstance}
         setSelectedInstances={setSelectedInstances}
       />
       <Scatter
         instances={instances}
         features={features}
         selectedInstances={selectedInstances}
-        focusedInstance={focusedInstance}
       />
     </div>
   );

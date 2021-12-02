@@ -7,19 +7,18 @@ class App extends React.Component {
       selectedInstances: this.props.instances, // []
       selectedAugs: this.props.augmentations,
       focusedInstance: undefined, // this.props.instances[3]
+      augGroups: Data.groupAugs(this.props.augmentations),
     };
   }
 
   setSelectedInstances(instances) {
     const newSelectedAugs = this.getSelectedAugs(instances);
+    const newGroups = Data.groupAugs(newSelectedAugs)
     this.setState({
       selectedInstances: instances,
       selectedAugs: newSelectedAugs,
+      augGroups: newGroups,
     });
-  }
-
-  setFocusedInstance(instance) {
-    this.setState({ focusedInstance: instance });
   }
 
   getSelectedAugs(selectedInstances) {
@@ -29,6 +28,10 @@ class App extends React.Component {
     );
   }
 
+  setAugGroups(groups) {
+    this.setState({augGroups: groups});
+  }
+
   render() {
     return (
       <div className="app" id="app">
@@ -36,25 +39,17 @@ class App extends React.Component {
           instances={this.props.instances}
           features={this.props.features}
           selectedInstances={this.state.selectedInstances}
-          focusedInstance={this.state.focusedInstance}
           setSelectedInstances={(v) => this.setSelectedInstances(v)}
         />
         <Table
           instances={this.state.selectedInstances}
           features={this.props.features}
           augmentations={this.state.selectedAugs}
-          focusedInstance={this.state.focusedInstance}
-          setFocusedInstance={(v) => this.setFocusedInstance(v)}
+          augGroups={this.state.augGroups}
+          setAugGroups={(v) => this.props.setAugGroups(v)}
         />
       </div>
     );
   }
 }
 
-function Button({ text, onClick }) {
-  return (
-    <div className="button" onClick={() => onClick()}>
-      {text}
-    </div>
-  );
-}

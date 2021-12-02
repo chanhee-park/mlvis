@@ -1,4 +1,4 @@
-class HistogramGraph extends React.Component {
+class Histogram extends React.Component {
   componentDidMount() {
     this.drawWrapper();
   }

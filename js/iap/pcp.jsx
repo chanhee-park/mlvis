@@ -77,7 +77,7 @@ class PCP extends React.Component {
         this.props.features[colorCriteria].min,
         this.props.features[colorCriteria].max,
       ])
-      .range([0.25, 1]);
+      .range([0.3, 1]);
 
     // set a line function
     // curve explorer: http://bl.ocks.org/d3indepth/b6d4845973089bc1012dec1674d3aff8
@@ -135,14 +135,6 @@ class PCP extends React.Component {
         color = "#eee";
       }
 
-      // style for focused
-      const isFocused = this.props.focusedInstance === instance;
-      if (isFocused) {
-        color = "#F95";
-        strokeWidth = 5;
-        opacity = 1;
-      }
-
       // draw a instance as a line
       this.state.svg
         .append("path")
@@ -151,7 +143,7 @@ class PCP extends React.Component {
         .attr("stroke", color)
         .attr("stroke-width", strokeWidth)
         .attr("opacity", opacity)
-        .attr("class", isFocused ? "focused-instance-line" : "instance-line");
+        .attr("class", "instance-line");
     });
   }
 

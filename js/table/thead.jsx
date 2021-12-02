@@ -41,7 +41,7 @@ class TableHeader extends React.Component {
       this.setState({ sortFeature: fName, sortOrder: 1 });
     }
     const sorted = this.getSortedGroups();
-    this.props.setSortedGroup(sorted);
+    this.props.setAugGroups(sorted);
   }
 
   render() {

@@ -53,7 +53,7 @@ class Scatter extends React.Component {
         this.props.features[colorCriteria].min,
         this.props.features[colorCriteria].max,
       ])
-      .range([0, 1]);
+      .range([0.3, 1]);
 
     // draw axis lines and feature names by each feature
     featureNames.forEach((feature, f_index) => {
@@ -110,13 +110,6 @@ class Scatter extends React.Component {
         this.props.selectedInstances.indexOf(instance) === -1
       ) {
         color = "#eee";
-      }
-
-      // style for focused
-      if (this.props.focusedInstance === instance) {
-        color = "#F95";
-        r = 5;
-        opacity = 1;
       }
 
       // draw points
