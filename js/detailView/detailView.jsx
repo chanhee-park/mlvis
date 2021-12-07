@@ -68,7 +68,7 @@ class DetailTableHeader extends React.Component {
         <tr>
           {this.props.features.map((fName) => (
             <th key={`de-th-${fName}`}>
-              <div className="table-header__feature-name">{fName}</div>
+              <div className="table-header__feature-name">{fName === 'diff' ? 'diff_pred' : fName}</div>
             </th>
           ))}
         </tr>

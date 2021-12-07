@@ -154,7 +154,7 @@ const Data = {
     });
 
     // return only groups which have 30 or more members
-    return Object.values(groups).filter((g) => g.instanceIds.length >= 30);
+    return Object.values(groups).filter((g) => g.instanceIds.length >= 10);
   },
 
   getStatOfGroup: (totalInstances, groupInstanceIds) => {

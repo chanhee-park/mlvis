@@ -32,7 +32,7 @@ class TableHeader extends React.Component {
                 className="table-header__feature-name"
                 onClick={() => this.onClickFeature(fName)}
               >
-                {fName}
+                {fName === 'diff' ? 'diff_pred' : fName}
                 {fName === this.state.sortFeature && (
                   <span className="icon">
                     {this.state.sortOrder === 1 && "↓"}

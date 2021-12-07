@@ -187,11 +187,23 @@ class PCP extends React.Component {
         .attr("class", "axis_lien");
 
       // write min and max values
+      const minValue = this.props.features[feature].min;
+      const maxValue = this.props.features[feature].max;
+      const centralValue = (minValue + maxValue) / 2;
+
       this.state.svg
         .append("text")
         .text(Math.ceil(this.props.features[feature].min))
         .attr("x", x - 5)
         .attr("y", y_min)
+        .attr("text-anchor", "end")
+        .attr("alignment-baseline", "baseline");
+
+      this.state.svg
+        .append("text")
+        .text(Math.ceil(centralValue * 10)/10)
+        .attr("x", x - 5)
+        .attr("y", (y_min+y_max)/2)
         .attr("text-anchor", "end")
         .attr("alignment-baseline", "baseline");
 

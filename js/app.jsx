@@ -43,6 +43,7 @@ class App extends React.Component {
   }
 
   render() {
+    const tableFeatures = this.props.features;
     return (
       <div className="app" id="app">
         <IAP

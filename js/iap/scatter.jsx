@@ -89,7 +89,7 @@ class Scatter extends React.Component {
       // draw x feature name
       svg
         .append("text")
-        .text("real")
+        .text("pred")
         .attr("x", scaleAxisX(f_index + 1))
         .attr("y", paddingT + scatterSize + 4)
         .attr("text-anchor", "end")
@@ -115,7 +115,7 @@ class Scatter extends React.Component {
       // draw points
       featureNames.forEach((feature, f_index) => {
         // get position
-        const cx = scaleAxisX(f_index) + scales["real"](instance["real"]);
+        const cx = scaleAxisX(f_index) + scales["pred"](instance["pred"]);
         const cy = paddingT + scatterSize - scales[feature](instance[feature]);
         svg
           .append("circle")
